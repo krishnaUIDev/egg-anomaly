@@ -1,0 +1,30 @@
+{
+  "name": "egg-anomaly-monorepo",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Enterprise Egg Anomaly Detection & Commercial Quality Control Monorepo",
+  "workspaces": [
+    "frontend"
+  ],
+  "scripts": {
+    "dev:frontend": "npm run dev --workspace=frontend",
+    "build:frontend": "npm run build --workspace=frontend",
+    "start:frontend": "npm run start --workspace=frontend",
+    "test:server": "PYTHONPATH=server .venv/bin/pytest server/tests/ -v",
+    "dev:server": "cd server && ../.venv/bin/python run.py",
+    "docker:build": "docker compose build",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f"
+  },
+  "keywords": [
+    "egg-anomaly-detection",
+    "computer-vision",
+    "fastapi",
+    "nextjs",
+    "usda-grading"
+  ],
+  "author": "Google DeepMind Advanced Agentic Coding",
+  "license": "MIT"
+}
+

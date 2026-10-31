@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eggscan-backend
+  namespace: eggscan-production
+  labels:
+    app: eggscan-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: eggscan-backend
+  template:
+    metadata:
+      labels:
+        app: eggscan-backend
+    spec:
+      containers:
+        - name: backend
+          image: ghcr.io/org/eggscan-backend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          env:
+            - name: APP_ENV
+              value: "production"
+            - name: PORT
+              value: "8000"
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1536Mi"
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /livez
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 15
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eggscan-backend-service
+  namespace: eggscan-production
+spec:
+  selector:
+    app: eggscan-backend
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+

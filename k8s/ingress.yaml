@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: eggscan-ingress
+  namespace: eggscan-production
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-body-size: "25m"
+spec:
+  tls:
+    - hosts:
+        - eggscan.enterprise.internal
+      secretName: eggscan-tls
+  rules:
+    - host: eggscan.enterprise.internal
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: eggscan-backend-service
+                port:
+                  number: 8000
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: eggscan-frontend-service
+                port:
+                  number: 80
+

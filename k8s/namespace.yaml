@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: eggscan-production
+  labels:
+    app.kubernetes.io/name: eggscan
+    app.kubernetes.io/environment: production
+

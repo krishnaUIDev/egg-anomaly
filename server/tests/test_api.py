@@ -1,8 +1,9 @@
 """Integration tests for Enterprise FastAPI endpoints."""
 
 import os
-from fastapi.testclient import TestClient
+
 from app.main import app
+from fastapi.testclient import TestClient
 
 client = TestClient(app)
 SAMPLES_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "datasets", "samples")

@@ -3,12 +3,12 @@ Detects cracks, dirt/blood stains, and shape deformities from phone camera captu
 """
 
 import base64
-from typing import List, Tuple, Dict, Any, Optional
+
 import cv2
 import numpy as np
 
+from core.grading import DefectDetection, DefectType
 from core.preprocessing import EggROI
-from core.grading import DefectDetection, DefectType, GradingResult, evaluate_egg_grade
 
 
 class EggAnomalyEngine:
@@ -18,7 +18,7 @@ class EggAnomalyEngine:
         self.crack_sensitivity = crack_sensitivity
         self.stain_sensitivity = stain_sensitivity
 
-    def analyze(self, roi: EggROI) -> Tuple[List[DefectDetection], np.ndarray, np.ndarray]:
+    def analyze(self, roi: EggROI) -> tuple[list[DefectDetection], np.ndarray, np.ndarray]:
         """Runs the complete inspection pipeline on an isolated EggROI.
 
         Returns:
@@ -34,7 +34,7 @@ class EggAnomalyEngine:
         cv2.ellipse(inner_mask, (w // 2, h // 2), (int(w * 0.38), int(h * 0.40)), 0, 0, 360, 255, -1)
         egg_area = float(cv2.countNonZero(inner_mask))
 
-        defects: List[DefectDetection] = []
+        defects: list[DefectDetection] = []
         combined_anomaly_map = np.zeros((h, w), dtype=np.float32)
 
         # 1. Inspect for Cracks / Micro-fissures
@@ -57,7 +57,7 @@ class EggAnomalyEngine:
 
         return defects, combined_anomaly_map, annotated
 
-    def _detect_cracks(self, img_rgb: np.ndarray, mask: np.ndarray, egg_area: float) -> Tuple[List[DefectDetection], np.ndarray]:
+    def _detect_cracks(self, img_rgb: np.ndarray, mask: np.ndarray, egg_area: float) -> tuple[list[DefectDetection], np.ndarray]:
         """Detects high-frequency thin line fissures and cracks using multi-directional gradient filters."""
         h, w, _ = img_rgb.shape
         gray = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2GRAY)
@@ -117,7 +117,7 @@ class EggAnomalyEngine:
 
         return crack_defects, crack_heatmap
 
-    def _detect_stains(self, img_rgb: np.ndarray, mask: np.ndarray, egg_area: float) -> Tuple[List[DefectDetection], np.ndarray]:
+    def _detect_stains(self, img_rgb: np.ndarray, mask: np.ndarray, egg_area: float) -> tuple[list[DefectDetection], np.ndarray]:
         """Detects organic stains, blood spots, and dirt by localized chromatic and luminance deviation from surrounding shell surface."""
         h, w, _ = img_rgb.shape
         lab = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2LAB)
@@ -194,7 +194,7 @@ class EggAnomalyEngine:
 
         return stain_defects, stain_heatmap
 
-    def _detect_shape_deformity(self, roi: EggROI) -> Optional[DefectDetection]:
+    def _detect_shape_deformity(self, roi: EggROI) -> DefectDetection | None:
         """Detects whether the egg geometry deviates significantly from standard prolate ellipsoid proportions."""
         # Standard eggs have aspect ratio ~ 1.25 to 1.55, and high convexity/solidity (> 0.92)
         ar = roi.aspect_ratio
@@ -216,7 +216,7 @@ class EggAnomalyEngine:
             )
         return None
 
-    def _render_annotations(self, img_rgb: np.ndarray, defects: List[DefectDetection], heatmap: np.ndarray, mask: np.ndarray) -> np.ndarray:
+    def _render_annotations(self, img_rgb: np.ndarray, defects: list[DefectDetection], heatmap: np.ndarray, mask: np.ndarray) -> np.ndarray:
         """Renders defect bounding boxes, labels, and translucent heatmap on the inspection image."""
         canvas = img_rgb.copy()
         

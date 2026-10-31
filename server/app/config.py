@@ -1,8 +1,8 @@
 """Enterprise Application Configuration and Environment Settings."""
 
 import os
-from typing import List
-from pydantic import BaseModel, Field
+
+from pydantic import BaseModel
 
 
 class Settings(BaseModel):
@@ -12,7 +12,7 @@ class Settings(BaseModel):
     debug: bool = os.getenv("DEBUG", "false").lower() == "true"
     host: str = os.getenv("HOST", "0.0.0.0")
     port: int = int(os.getenv("PORT", "8000"))
-    cors_origins: List[str] = [
+    cors_origins: list[str] = [
         origin.strip() for origin in os.getenv(
             "CORS_ORIGINS",
             "http://localhost:3000,http://127.0.0.1:3000,http://localhost:8000,*"

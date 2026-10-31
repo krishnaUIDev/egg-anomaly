@@ -1,30 +1,28 @@
 """Enterprise FastAPI Web Service for Egg Quality Inspection and Anomaly Detection."""
 
+import glob
 import io
 import os
 import time
-import glob
 from collections import defaultdict
-from typing import List, Optional
+
 import cv2
 import numpy as np
-from PIL import Image
-from fastapi import FastAPI, File, UploadFile, Query, HTTPException, Request
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
-from fastapi.staticfiles import StaticFiles
-
 from app.config import settings
 from app.schemas import (
-    InspectionResponse,
-    DefectResponseItem,
-    HealthResponse,
     BatchInspectionSummary,
-    EnterpriseMetricsResponse
+    DefectResponseItem,
+    EnterpriseMetricsResponse,
+    HealthResponse,
+    InspectionResponse,
 )
-from core.preprocessing import isolate_egg_roi, fix_exif_orientation
 from core.anomaly_engine import EggAnomalyEngine, encode_image_base64
-from core.grading import evaluate_egg_grade, DefectType, EggGrade
+from core.grading import EggGrade, evaluate_egg_grade
+from core.preprocessing import fix_exif_orientation, isolate_egg_roi
+from fastapi import FastAPI, File, HTTPException, Query, Request, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from PIL import Image
 
 app = FastAPI(
     title=settings.app_name,
@@ -115,7 +113,7 @@ async def inspect_egg(
         pil_img = fix_exif_orientation(pil_img)
         rgb_img = np.array(pil_img.convert("RGB"))
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Failed to decode image: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Failed to decode image: {e!s}")
 
     # Preprocessing & Isolation
     roi = isolate_egg_roi(rgb_img, target_size=512)
@@ -182,7 +180,7 @@ async def inspect_egg(
 
 @app.post("/api/v1/inspect/batch", response_model=BatchInspectionSummary, tags=["Inspection"])
 async def inspect_batch(
-    files: List[UploadFile] = File(..., description="Batch of egg images to inspect"),
+    files: list[UploadFile] = File(..., description="Batch of egg images to inspect"),
     crack_sensitivity: float = Query(0.5, ge=0.1, le=1.0),
     stain_sensitivity: float = Query(0.5, ge=0.1, le=1.0),
 ):
@@ -194,7 +192,7 @@ async def inspect_batch(
         )
 
     start_batch_time = time.perf_counter()
-    results: List[InspectionResponse] = []
+    results: list[InspectionResponse] = []
     grade_a = 0
     grade_b = 0
     reject = 0

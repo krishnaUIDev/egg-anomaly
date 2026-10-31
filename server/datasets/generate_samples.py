@@ -1,7 +1,9 @@
 """Generates sample test images for each defect class into datasets/samples."""
 
 import os
+
 import cv2
+
 from datasets.synthetic_generator import generate_egg_image
 
 

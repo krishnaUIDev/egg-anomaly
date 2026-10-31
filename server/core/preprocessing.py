@@ -3,7 +3,7 @@ egg ROI segmentation, and lighting normalization.
 """
 
 from dataclasses import dataclass
-from typing import Optional, Tuple
+
 import cv2
 import numpy as np
 from PIL import Image, ImageOps
@@ -16,7 +16,7 @@ class EggROI:
     preprocessed_rgb: np.ndarray      # Lighting-normalized full image (RGB)
     cropped_egg_rgb: np.ndarray       # Cropped bounding box of egg (RGB)
     mask: np.ndarray                  # Binary mask of the egg (0 or 255)
-    bbox: Tuple[int, int, int, int]   # (x, y, w, h) in original coordinate space
+    bbox: tuple[int, int, int, int]   # (x, y, w, h) in original coordinate space
     confidence: float                 # Confidence that an egg was detected (0.0 - 1.0)
     aspect_ratio: float               # Height / Width ratio of the egg contour
     solidity: float                   # Contour area / Convex hull area
@@ -30,7 +30,7 @@ def fix_exif_orientation(pil_image: Image.Image) -> Image.Image:
         return pil_image
 
 
-def normalize_lighting(rgb_image: np.ndarray, clip_limit: float = 2.0, tile_grid_size: Tuple[int, int] = (8, 8)) -> np.ndarray:
+def normalize_lighting(rgb_image: np.ndarray, clip_limit: float = 2.0, tile_grid_size: tuple[int, int] = (8, 8)) -> np.ndarray:
     """Applies CLAHE (Contrast Limited Adaptive Histogram Equalization)
 
     to the Luminance channel in LAB color space to balance shadows and phone flash reflections.

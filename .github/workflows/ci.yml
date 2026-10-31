@@ -7,6 +7,28 @@ on:
     branches: [main, master]
 
 jobs:
+  lint-and-format:
+    name: Code Quality (Prettier & ESLint)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+
+      - name: Install monorepo dependencies
+        run: npm ci
+
+      - name: Check Code Formatting (Prettier)
+        run: npm run format:check
+
+      - name: Lint Next.js Application (ESLint)
+        run: npm run lint
+
   backend-test:
     name: Server (Backend) Pytest & Verification
     runs-on: ubuntu-latest
@@ -34,6 +56,7 @@ jobs:
 
   frontend-build:
     name: Next.js Frontend Build & Typecheck
+    needs: [lint-and-format]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -47,12 +70,6 @@ jobs:
 
       - name: Install monorepo dependencies
         run: npm ci
-
-      - name: Check Code Formatting (Prettier)
-        run: npm run format:check
-
-      - name: Lint Next.js Application (ESLint)
-        run: npm run lint
 
       - name: Build Next.js Application
         run: npm run build:frontend

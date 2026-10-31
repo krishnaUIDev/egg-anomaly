@@ -1,12 +1,9 @@
 """Unit and integration tests for the Egg Anomaly Inspection Engine."""
 
-import pytest
 import numpy as np
-import cv2
-
-from core.preprocessing import isolate_egg_roi, normalize_lighting, fix_exif_orientation
 from core.anomaly_engine import EggAnomalyEngine, encode_image_base64
-from core.grading import evaluate_egg_grade, DefectType, EggGrade
+from core.grading import DefectType, EggGrade, evaluate_egg_grade
+from core.preprocessing import isolate_egg_roi, normalize_lighting
 from datasets.synthetic_generator import generate_egg_image
 
 

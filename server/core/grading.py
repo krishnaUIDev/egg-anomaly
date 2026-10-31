@@ -2,7 +2,6 @@
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import List, Dict, Any
 
 
 class EggGrade(str, Enum):
@@ -25,7 +24,7 @@ class DefectDetection:
     defect_type: DefectType
     confidence: float                  # 0.0 - 1.0
     severity: str                      # "low", "medium", "critical"
-    bbox: List[int]                    # [x, y, w, h] in cropped ROI coordinates
+    bbox: list[int]                    # [x, y, w, h] in cropped ROI coordinates
     area_ratio: float                  # Fraction of egg surface affected (0.0 - 1.0)
     description: str
 
@@ -35,12 +34,12 @@ class GradingResult:
     grade: EggGrade
     quality_score: float               # 0.0 to 100.0
     is_acceptable: bool                # True for commercial Grade A / B
-    defects: List[DefectDetection] = field(default_factory=list)
+    defects: list[DefectDetection] = field(default_factory=list)
     recommendation: str = ""
-    summary_reasons: List[str] = field(default_factory=list)
+    summary_reasons: list[str] = field(default_factory=list)
 
 
-def evaluate_egg_grade(defects: List[DefectDetection], base_quality_score: float = 100.0) -> GradingResult:
+def evaluate_egg_grade(defects: list[DefectDetection], base_quality_score: float = 100.0) -> GradingResult:
     """Evaluates the final grade and market admissibility of an inspected egg.
 
     Commercial Rules:

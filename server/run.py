@@ -1,7 +1,7 @@
 """Entrypoint to launch the Egg Anomaly Detection web service and API."""
 
-import os
 import socket
+
 import uvicorn
 
 

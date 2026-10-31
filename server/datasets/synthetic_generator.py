@@ -3,9 +3,8 @@ Simulates phone camera captures of clean eggs and various defect conditions
 (cracks, dirt/stains, blood spots, and irregular shapes) on realistic kitchen/table backgrounds.
 """
 
-import math
 import random
-from typing import Tuple
+
 import cv2
 import numpy as np
 
@@ -31,7 +30,7 @@ def generate_egg_image(
     width: int = 640,
     height: int = 640,
     shell_color: str = "brown"
-) -> Tuple[np.ndarray, dict]:
+) -> tuple[np.ndarray, dict]:
     """Generates a synthetic egg image with simulated phone camera characteristics.
 
     Args:

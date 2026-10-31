@@ -97,3 +97,4 @@ export function AnalyticsDashboard({ metrics, onRefresh }: AnalyticsDashboardPro
     </div>
   );
 }
+

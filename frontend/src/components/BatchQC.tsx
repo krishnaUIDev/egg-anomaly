@@ -159,3 +159,4 @@ export function BatchQC({ batchResult, isLoading, onUploadBatch }: BatchQCProps)
     </div>
   );
 }
+

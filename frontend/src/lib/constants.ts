@@ -56,3 +56,4 @@ export const USDA_DIRECTIVES = [
     desc: "Cracks, leaks, blood spots, or heavy contamination. Unfit for human consumption.",
   },
 ];
+

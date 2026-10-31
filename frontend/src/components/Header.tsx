@@ -97,3 +97,4 @@ export function Header({ activeTab, onTabChange, systemHealthy }: HeaderProps) {
     </header>
   );
 }
+

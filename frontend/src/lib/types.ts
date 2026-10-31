@@ -57,3 +57,4 @@ export interface SampleEgg {
 
 export type ViewLayer = "annotated" | "heatmap" | "original";
 export type ActiveTab = "single" | "batch" | "analytics";
+

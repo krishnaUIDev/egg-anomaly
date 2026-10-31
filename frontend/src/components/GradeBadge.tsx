@@ -44,3 +44,4 @@ export function GradeBadge({ grade, size = "md", className }: GradeBadgeProps) {
     </span>
   );
 }
+

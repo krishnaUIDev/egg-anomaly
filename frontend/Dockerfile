@@ -3,7 +3,8 @@ FROM node:22-alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm ci
+ENV NODE_OPTIONS="--no-deprecation"
+RUN npm ci --no-audit --no-fund --loglevel=error
 
 FROM node:22-alpine AS builder
 WORKDIR /app
@@ -11,6 +12,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . ./
 
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_OPTIONS="--no-deprecation"
 RUN npm run build
 
 # --- Production Runner ---
@@ -19,6 +21,7 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_OPTIONS="--no-deprecation"
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 

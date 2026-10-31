@@ -21,7 +21,9 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - name: Install monorepo dependencies
-        run: npm ci
+        run: npm ci --no-audit --no-fund --loglevel=error
+        env:
+          NODE_OPTIONS: "--no-deprecation"
 
       - name: Check Code Formatting (Prettier)
         run: npm run format:check
@@ -69,7 +71,9 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - name: Install monorepo dependencies
-        run: npm ci
+        run: npm ci --no-audit --no-fund --loglevel=error
+        env:
+          NODE_OPTIONS: "--no-deprecation"
 
       - name: Build Next.js Application
         run: npm run build:frontend

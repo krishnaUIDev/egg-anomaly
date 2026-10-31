@@ -89,7 +89,8 @@ export function COAModal({ isOpen, onClose, stats }: COAModalProps) {
           <div className="flex justify-between">
             <span className="text-slate-500">CRITICAL CHECKS / LOSS:</span>
             <span className="text-emerald-400">
-              {((stats.loss / Math.max(1, stats.totalInspected)) * 100).toFixed(1)}% (Within ≤ 5.0% origin tolerance)
+              {((stats.loss / Math.max(1, stats.totalInspected)) * 100).toFixed(1)}% (Within ≤ 5.0%
+              origin tolerance)
             </span>
           </div>
         </div>

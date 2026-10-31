@@ -35,9 +35,13 @@ export function QuickControls({
           <span className="text-[11px] font-medium text-slate-400 group-hover:text-amber-400 transition">
             Transillumination
           </span>
-          <Lightbulb className={`w-4 h-4 transition-colors ${candlingActive ? "text-amber-400 fill-amber-400" : "text-slate-400"}`} />
+          <Lightbulb
+            className={`w-4 h-4 transition-colors ${candlingActive ? "text-amber-400 fill-amber-400" : "text-slate-400"}`}
+          />
         </div>
-        <div className={`text-xs font-bold ${candlingActive ? "text-amber-400" : "text-slate-200"}`}>
+        <div
+          className={`text-xs font-bold ${candlingActive ? "text-amber-400" : "text-slate-200"}`}
+        >
           {candlingActive ? "Candling: ON (5500K)" : "Candling: OFF"}
         </div>
         <span className="text-[10px] text-slate-500 mt-0.5">High-lumen torch backlighting</span>
@@ -52,7 +56,9 @@ export function QuickControls({
           <span className="text-[11px] font-medium text-slate-400 group-hover:text-emerald-400 transition">
             Device Torch
           </span>
-          <Flashlight className={`w-4 h-4 transition-colors ${torchActive ? "text-emerald-400 fill-emerald-400" : "text-slate-400"}`} />
+          <Flashlight
+            className={`w-4 h-4 transition-colors ${torchActive ? "text-emerald-400 fill-emerald-400" : "text-slate-400"}`}
+          />
         </div>
         <div className={`text-xs font-bold ${torchActive ? "text-emerald-400" : "text-slate-200"}`}>
           {torchActive ? "Torch: ON (100%)" : "Torch: OFF"}
@@ -71,9 +77,7 @@ export function QuickControls({
           </span>
           <RefreshCw className="w-4 h-4 text-purple-400 group-hover:rotate-180 transition-transform duration-300" />
         </div>
-        <div className="text-xs font-bold text-slate-200 truncate w-full">
-          {activeSampleName}
-        </div>
+        <div className="text-xs font-bold text-slate-200 truncate w-full">{activeSampleName}</div>
         <span className="text-[10px] text-slate-500 mt-0.5">Hairline, Blood, Stain, Leaker</span>
       </button>
 

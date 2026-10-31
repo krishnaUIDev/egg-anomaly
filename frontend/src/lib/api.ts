@@ -76,4 +76,3 @@ export async function fetchSampleImageFile(filename: string): Promise<File> {
   const blob = await res.blob();
   return new File([blob], filename, { type: "image/jpeg" });
 }
-

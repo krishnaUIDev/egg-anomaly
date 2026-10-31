@@ -28,8 +28,15 @@ export function InspectionLogStream({ logs, onClear }: InspectionLogStreamProps)
       <div className="flex flex-col gap-2 overflow-y-auto max-h-56 pr-1 text-xs no-scrollbar font-mono">
         {logs.map((log) => {
           const isAA = log.grade === "AA";
-          const isLoss = log.grade.includes("Loss") || log.grade.includes("Inedible") || log.grade.includes("Reject");
-          const badgeColor = isAA ? "text-emerald-400" : isLoss ? "text-rose-400" : "text-amber-400";
+          const isLoss =
+            log.grade.includes("Loss") ||
+            log.grade.includes("Inedible") ||
+            log.grade.includes("Reject");
+          const badgeColor = isAA
+            ? "text-emerald-400"
+            : isLoss
+              ? "text-rose-400"
+              : "text-amber-400";
 
           return (
             <div
@@ -39,7 +46,9 @@ export function InspectionLogStream({ logs, onClear }: InspectionLogStreamProps)
               <div className="flex items-center gap-2">
                 <span className="text-slate-500 font-mono text-[10px]">{log.time}</span>
                 <span className="text-slate-200 font-semibold">{log.sku}</span>
-                <span className="text-[10px] text-slate-400 truncate max-w-[120px]">{log.name}</span>
+                <span className="text-[10px] text-slate-400 truncate max-w-[120px]">
+                  {log.name}
+                </span>
               </div>
               <div className="flex items-center gap-2 font-mono">
                 <span className={`font-bold text-[11px] ${badgeColor}`}>[{log.grade}]</span>
@@ -50,7 +59,7 @@ export function InspectionLogStream({ logs, onClear }: InspectionLogStreamProps)
         })}
         {logs.length === 0 && (
           <div className="text-center py-8 text-slate-500 text-xs">
-            No inspection transactions logged yet. Click "Capture SKU" to record.
+            No inspection transactions logged yet. Click &quot;Capture SKU&quot; to record.
           </div>
         )}
       </div>

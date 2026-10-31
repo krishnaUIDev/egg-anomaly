@@ -10,7 +10,8 @@ export function TelemetryMatrix({ currentEgg }: TelemetryMatrixProps) {
   const crackPct = Math.min(100, currentEgg.crackSeverity * 100);
   const bloodPct = currentEgg.bloodSpotDetected ? 95 : 2;
   const dirtPct = Math.min(100, currentEgg.dirtPercentage * 10);
-  const lossPct = currentEgg.grade.includes("Loss") || currentEgg.grade.includes("Inedible") ? 100 : 0;
+  const lossPct =
+    currentEgg.grade.includes("Loss") || currentEgg.grade.includes("Inedible") ? 100 : 0;
 
   return (
     <div className="bg-slate-900 border border-slate-750 rounded-2xl p-3.5">
@@ -29,7 +30,9 @@ export function TelemetryMatrix({ currentEgg }: TelemetryMatrixProps) {
         <div className="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex flex-col justify-between">
           <div className="flex justify-between items-center text-[11px] text-slate-400 mb-1">
             <span>Shell Cracks (Checks)</span>
-            <span className={`font-mono font-semibold ${currentEgg.cracksDetected ? "text-rose-400" : "text-emerald-400"}`}>
+            <span
+              className={`font-mono font-semibold ${currentEgg.cracksDetected ? "text-rose-400" : "text-emerald-400"}`}
+            >
               {(currentEgg.crackSeverity * 100).toFixed(1)}%
             </span>
           </div>
@@ -41,7 +44,9 @@ export function TelemetryMatrix({ currentEgg }: TelemetryMatrixProps) {
               style={{ width: `${Math.max(2, crackPct)}%` }}
             />
           </div>
-          <span className={`mt-1 text-[9px] font-mono font-bold ${currentEgg.cracksDetected ? "text-rose-400" : "text-emerald-400"}`}>
+          <span
+            className={`mt-1 text-[9px] font-mono font-bold ${currentEgg.cracksDetected ? "text-rose-400" : "text-emerald-400"}`}
+          >
             {currentEgg.cracksDetected ? "CHECK DETECTED (REJECT)" : "STATUS: SOUND SHELL"}
           </span>
         </div>
@@ -50,7 +55,9 @@ export function TelemetryMatrix({ currentEgg }: TelemetryMatrixProps) {
         <div className="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex flex-col justify-between">
           <div className="flex justify-between items-center text-[11px] text-slate-400 mb-1">
             <span>Blood / Meat Spots</span>
-            <span className={`font-mono font-semibold ${currentEgg.bloodSpotDetected ? "text-rose-400" : "text-emerald-400"}`}>
+            <span
+              className={`font-mono font-semibold ${currentEgg.bloodSpotDetected ? "text-rose-400" : "text-emerald-400"}`}
+            >
               {currentEgg.bloodSpotMm.toFixed(1)} mm
             </span>
           </div>
@@ -62,7 +69,9 @@ export function TelemetryMatrix({ currentEgg }: TelemetryMatrixProps) {
               style={{ width: `${bloodPct}%` }}
             />
           </div>
-          <span className={`mt-1 text-[9px] font-mono font-bold ${currentEgg.bloodSpotDetected ? "text-rose-400" : "text-emerald-400"}`}>
+          <span
+            className={`mt-1 text-[9px] font-mono font-bold ${currentEgg.bloodSpotDetected ? "text-rose-400" : "text-emerald-400"}`}
+          >
             {currentEgg.bloodSpotDetected ? 'BLOOD DEFECT > 1/8" (LOSS)' : "STATUS: CLEAR INTERIOR"}
           </span>
         </div>
@@ -71,7 +80,9 @@ export function TelemetryMatrix({ currentEgg }: TelemetryMatrixProps) {
         <div className="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex flex-col justify-between">
           <div className="flex justify-between items-center text-[11px] text-slate-400 mb-1">
             <span>Foreign Stains (Dirt)</span>
-            <span className={`font-mono font-semibold ${currentEgg.dirtPercentage > 1 ? "text-amber-400" : "text-emerald-400"}`}>
+            <span
+              className={`font-mono font-semibold ${currentEgg.dirtPercentage > 1 ? "text-amber-400" : "text-emerald-400"}`}
+            >
               {currentEgg.dirtPercentage.toFixed(1)}%
             </span>
           </div>
@@ -83,7 +94,9 @@ export function TelemetryMatrix({ currentEgg }: TelemetryMatrixProps) {
               style={{ width: `${dirtPct}%` }}
             />
           </div>
-          <span className={`mt-1 text-[9px] font-mono font-bold ${currentEgg.dirtPercentage > 3 ? "text-amber-400" : "text-emerald-400"}`}>
+          <span
+            className={`mt-1 text-[9px] font-mono font-bold ${currentEgg.dirtPercentage > 3 ? "text-amber-400" : "text-emerald-400"}`}
+          >
             {currentEgg.dirtPercentage > 3 ? "STAIN > 1/16 (DOWNGRADE)" : "AREA ≤ 1/32 (CLEAN)"}
           </span>
         </div>
@@ -92,7 +105,9 @@ export function TelemetryMatrix({ currentEgg }: TelemetryMatrixProps) {
         <div className="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex flex-col justify-between">
           <div className="flex justify-between items-center text-[11px] text-slate-400 mb-1">
             <span>Yolk Mobility & Shadow</span>
-            <span className="font-mono text-emerald-400 font-semibold">{currentEgg.yolkCentering.split(",")[0]}</span>
+            <span className="font-mono text-emerald-400 font-semibold">
+              {currentEgg.yolkCentering.split(",")[0]}
+            </span>
           </div>
           <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
             <div className="bg-emerald-500 h-1.5 rounded-full" style={{ width: "22%" }} />
@@ -104,7 +119,9 @@ export function TelemetryMatrix({ currentEgg }: TelemetryMatrixProps) {
         <div className="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex flex-col justify-between">
           <div className="flex justify-between items-center text-[11px] text-slate-400 mb-1">
             <span>Weight Est. (Mass CV)</span>
-            <span className="font-mono text-amber-400 font-semibold">{currentEgg.weightGrams.toFixed(1)} g</span>
+            <span className="font-mono text-amber-400 font-semibold">
+              {currentEgg.weightGrams.toFixed(1)} g
+            </span>
           </div>
           <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
             <div className="bg-amber-400 h-1.5 rounded-full" style={{ width: "68%" }} />
@@ -116,7 +133,9 @@ export function TelemetryMatrix({ currentEgg }: TelemetryMatrixProps) {
         <div className="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex flex-col justify-between">
           <div className="flex justify-between items-center text-[11px] text-slate-400 mb-1">
             <span>Leaker / Loss Risk</span>
-            <span className={`font-mono font-semibold ${lossPct > 0 ? "text-rose-400" : "text-emerald-400"}`}>
+            <span
+              className={`font-mono font-semibold ${lossPct > 0 ? "text-rose-400" : "text-emerald-400"}`}
+            >
               {lossPct > 0 ? "99.1%" : "0.00%"}
             </span>
           </div>
@@ -128,7 +147,9 @@ export function TelemetryMatrix({ currentEgg }: TelemetryMatrixProps) {
               style={{ width: `${lossPct > 0 ? 100 : 0}%` }}
             />
           </div>
-          <span className={`mt-1 text-[9px] font-mono font-bold ${lossPct > 0 ? "text-rose-400" : "text-emerald-400"}`}>
+          <span
+            className={`mt-1 text-[9px] font-mono font-bold ${lossPct > 0 ? "text-rose-400" : "text-emerald-400"}`}
+          >
             {lossPct > 0 ? "CRITICAL RUPTURE (DISCARD)" : "PASSED COMMERCIAL CRITERIA"}
           </span>
         </div>

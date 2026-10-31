@@ -48,6 +48,12 @@ jobs:
       - name: Install monorepo dependencies
         run: npm ci
 
+      - name: Check Code Formatting (Prettier)
+        run: npm run format:check
+
+      - name: Lint Next.js Application (ESLint)
+        run: npm run lint
+
       - name: Build Next.js Application
         run: npm run build:frontend
 

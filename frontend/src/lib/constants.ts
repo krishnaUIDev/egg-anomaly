@@ -151,9 +151,44 @@ export const BENCHMARK_SCENARIOS: OvoEggScenario[] = [
 ];
 
 export const INITIAL_LOG_SEEDS: LogEntry[] = [
-  { id: "1", time: "16:48:12", sku: "SKU-892101", grade: "AA", name: "Sound AA Normal", weight: "59.2g" },
-  { id: "2", time: "16:48:19", sku: "SKU-892102", grade: "AA", name: "Sound AA Normal", weight: "60.1g" },
-  { id: "3", time: "16:48:26", sku: "SKU-892103", grade: "B", name: 'Enlarged Air Cell (1/4")', weight: "55.8g" },
-  { id: "4", time: "16:48:33", sku: "SKU-892104", grade: "AA", name: "Sound AA Normal", weight: "58.7g" },
-  { id: "5", time: "16:48:40", sku: "SKU-892105", grade: "Loss", name: "Hairline Leaker Detected", weight: "54.0g" },
+  {
+    id: "1",
+    time: "16:48:12",
+    sku: "SKU-892101",
+    grade: "AA",
+    name: "Sound AA Normal",
+    weight: "59.2g",
+  },
+  {
+    id: "2",
+    time: "16:48:19",
+    sku: "SKU-892102",
+    grade: "AA",
+    name: "Sound AA Normal",
+    weight: "60.1g",
+  },
+  {
+    id: "3",
+    time: "16:48:26",
+    sku: "SKU-892103",
+    grade: "B",
+    name: 'Enlarged Air Cell (1/4")',
+    weight: "55.8g",
+  },
+  {
+    id: "4",
+    time: "16:48:33",
+    sku: "SKU-892104",
+    grade: "AA",
+    name: "Sound AA Normal",
+    weight: "58.7g",
+  },
+  {
+    id: "5",
+    time: "16:48:40",
+    sku: "SKU-892105",
+    grade: "Loss",
+    name: "Hairline Leaker Detected",
+    weight: "54.0g",
+  },
 ];

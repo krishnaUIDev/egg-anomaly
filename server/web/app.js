@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!resp.ok) throw new Error("Failed to load sample image");
       const blob = await resp.blob();
       const file = new File([blob], filename, { type: "image/jpeg" });
-      
+
       const reader = new FileReader();
       reader.onload = (e) => {
         currentRawImageSrc = e.target.result;
@@ -155,7 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
         item.className = `defect-item ${defect.defect_type}`;
         item.innerHTML = `
           <div>
-            <div class="defect-title">${defect.defect_type.replace('_', ' ')}</div>
+            <div class="defect-title">${defect.defect_type.replace("_", " ")}</div>
             <div class="defect-desc">${defect.description}</div>
           </div>
           <div class="defect-badge">${(defect.confidence * 100).toFixed(0)}% conf</div>
@@ -207,4 +207,3 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 });
-

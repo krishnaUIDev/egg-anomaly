@@ -22,8 +22,8 @@ export function DiagnosticCanvas({
     viewLayer === "annotated"
       ? result?.annotated_image_data || rawPreview
       : viewLayer === "heatmap"
-      ? result?.heatmap_data || rawPreview
-      : rawPreview || result?.annotated_image_data;
+        ? result?.heatmap_data || rawPreview
+        : rawPreview || result?.annotated_image_data;
 
   return (
     <div className="flex flex-col">
@@ -96,7 +96,9 @@ export function DiagnosticCanvas({
         {isLoading && (
           <div className="absolute inset-0 z-20 bg-slate-950/80 backdrop-blur-sm flex flex-col items-center justify-center gap-3">
             <div className="w-10 h-10 border-4 border-sky-500/20 border-t-sky-500 rounded-full animate-spin" />
-            <p className="text-xs font-medium text-slate-300">Analyzing shell integrity & anomalies...</p>
+            <p className="text-xs font-medium text-slate-300">
+              Analyzing shell integrity & anomalies...
+            </p>
           </div>
         )}
 
@@ -104,11 +106,14 @@ export function DiagnosticCanvas({
           <div className="text-center p-6 text-slate-500">
             <Camera className="w-12 h-12 mx-auto mb-2 opacity-30" />
             <p className="text-sm font-medium">Ready for Inspection</p>
-            <p className="text-xs text-slate-600 mt-1">Take a phone photo or pick a benchmark sample</p>
+            <p className="text-xs text-slate-600 mt-1">
+              Take a phone photo or pick a benchmark sample
+            </p>
           </div>
         )}
 
         {currentImageSrc && (
+          /* eslint-disable-next-line @next/next/no-img-element */
           <img
             src={currentImageSrc}
             alt="Egg Inspection Analysis Display"
@@ -119,4 +124,3 @@ export function DiagnosticCanvas({
     </div>
   );
 }
-

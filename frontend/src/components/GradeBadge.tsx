@@ -21,8 +21,8 @@ export function GradeBadge({ grade, size = "md", className }: GradeBadgeProps) {
   const colorClasses = isGradeA
     ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
     : isGradeB
-    ? "bg-amber-500/20 text-amber-400 border-amber-500/30"
-    : "bg-rose-500/20 text-rose-400 border-rose-500/30";
+      ? "bg-amber-500/20 text-amber-400 border-amber-500/30"
+      : "bg-rose-500/20 text-rose-400 border-rose-500/30";
 
   return (
     <span
@@ -44,4 +44,3 @@ export function GradeBadge({ grade, size = "md", className }: GradeBadgeProps) {
     </span>
   );
 }
-

@@ -147,8 +147,8 @@ export function InspectionStudio({
                 result.grade === "Grade A"
                   ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
                   : result.grade === "Grade B"
-                  ? "bg-amber-500/10 border-amber-500/30 text-amber-400"
-                  : "bg-rose-500/10 border-rose-500/30 text-rose-400"
+                    ? "bg-amber-500/10 border-amber-500/30 text-amber-400"
+                    : "bg-rose-500/10 border-rose-500/30 text-rose-400"
               }`}
             >
               <div>
@@ -220,4 +220,3 @@ export function InspectionStudio({
     </div>
   );
 }
-

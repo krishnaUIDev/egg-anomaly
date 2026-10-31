@@ -13,6 +13,10 @@
     "dev:server": "cd server && (../.venv/bin/python run.py || python3 run.py || python run.py)",
     "build:frontend": "npm run build --workspace=frontend",
     "start:frontend": "npm run start --workspace=frontend",
+    "lint": "npm run lint --workspace=frontend",
+    "lint:fix": "npm run lint:fix --workspace=frontend",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test:server": "PYTHONPATH=server .venv/bin/pytest server/tests/ -v",
     "docker:build": "docker compose build",
     "docker:up": "docker compose up -d",
@@ -29,6 +33,7 @@
   "author": "Google DeepMind Advanced Agentic Coding",
   "license": "MIT",
   "devDependencies": {
-    "concurrently": "^10.0.6"
+    "concurrently": "^10.0.6",
+    "prettier": "^3.9.10"
   }
 }

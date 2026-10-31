@@ -24,7 +24,11 @@
 }
 
 body {
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family:
+    "Plus Jakarta Sans",
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
   background-color: var(--bg-primary);
   color: var(--text-main);
   min-height: 100vh;
@@ -270,7 +274,7 @@ h1 {
 
 .tag {
   background: rgba(255, 255, 255, 0.08);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
   font-size: 0.75rem;
   padding: 0.25rem 0.6rem;
   border-radius: var(--radius-sm);
@@ -367,7 +371,9 @@ h1 {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Grade Banner */
@@ -439,7 +445,7 @@ h1 {
 }
 
 .quality-score-value {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
   font-weight: 700;
   font-size: 1.1rem;
 }
@@ -473,10 +479,18 @@ h1 {
   font-size: 0.8rem;
 }
 
-.defect-item.crack { border-left-color: var(--color-reject); }
-.defect-item.blood_spot { border-left-color: #be123c; }
-.defect-item.dirt_stain { border-left-color: var(--color-grade-b); }
-.defect-item.shape_deformity { border-left-color: #a855f7; }
+.defect-item.crack {
+  border-left-color: var(--color-reject);
+}
+.defect-item.blood_spot {
+  border-left-color: #be123c;
+}
+.defect-item.dirt_stain {
+  border-left-color: var(--color-grade-b);
+}
+.defect-item.shape_deformity {
+  border-left-color: #a855f7;
+}
 
 .defect-title {
   font-weight: 600;
@@ -490,7 +504,7 @@ h1 {
 }
 
 .defect-badge {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
   font-weight: 600;
   font-size: 0.75rem;
   background: rgba(255, 255, 255, 0.08);
@@ -528,4 +542,3 @@ h1 {
   color: var(--text-muted);
   padding: 1rem 0;
 }
-

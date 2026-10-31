@@ -34,7 +34,9 @@ export function AnalyticsDashboard({ metrics, onRefresh }: AnalyticsDashboardPro
             <div className="p-5 rounded-xl bg-slate-950 border border-slate-800">
               <span className="text-xs text-slate-400 font-medium">Lifetime Inspections</span>
               <div className="text-3xl font-black text-white mt-1">{metrics.total_inspections}</div>
-              <div className="text-[11px] text-slate-500 mt-2">Active Engine: {metrics.active_engine}</div>
+              <div className="text-[11px] text-slate-500 mt-2">
+                Active Engine: {metrics.active_engine}
+              </div>
             </div>
 
             {/* Pass Rate */}
@@ -81,8 +83,8 @@ export function AnalyticsDashboard({ metrics, onRefresh }: AnalyticsDashboardPro
                           grade === "Grade A"
                             ? "bg-emerald-500"
                             : grade === "Grade B"
-                            ? "bg-amber-500"
-                            : "bg-rose-500"
+                              ? "bg-amber-500"
+                              : "bg-rose-500"
                         }`}
                         style={{ width: `${pct}%` }}
                       />
@@ -97,4 +99,3 @@ export function AnalyticsDashboard({ metrics, onRefresh }: AnalyticsDashboardPro
     </div>
   );
 }
-

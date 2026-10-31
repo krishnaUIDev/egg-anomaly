@@ -3,7 +3,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "EggScan AI | Real-time Anomaly Detection & Quality Grading",
-  description: "Phone camera egg inspection with deep anomaly detection and USDA commercial grading.",
+  description:
+    "Phone camera egg inspection with deep anomaly detection and USDA commercial grading.",
 };
 
 export const viewport: Viewport = {
@@ -13,11 +14,7 @@ export const viewport: Viewport = {
   colorScheme: "light dark",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="h-full antialiased">
       <head>

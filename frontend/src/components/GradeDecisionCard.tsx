@@ -31,7 +31,9 @@ export function GradeDecisionCard({ currentEgg }: GradeDecisionCardProps) {
       <div className="grid grid-cols-3 gap-2 my-3 text-center">
         <div className="bg-slate-950/80 p-2 rounded-xl border border-slate-800">
           <span className="text-[10px] text-slate-400 block">Air Cell Depth</span>
-          <span className={`text-xs font-mono font-bold ${currentEgg.airCellMm <= 3.2 ? "text-emerald-400" : "text-amber-400"}`}>
+          <span
+            className={`text-xs font-mono font-bold ${currentEgg.airCellMm <= 3.2 ? "text-emerald-400" : "text-amber-400"}`}
+          >
             {currentEgg.airCellInch} ({currentEgg.grade})
           </span>
         </div>
@@ -43,7 +45,9 @@ export function GradeDecisionCard({ currentEgg }: GradeDecisionCardProps) {
         </div>
         <div className="bg-slate-950/80 p-2 rounded-xl border border-slate-800">
           <span className="text-[10px] text-slate-400 block">Shell Condition</span>
-          <span className={`text-xs font-mono font-bold truncate block ${currentEgg.cracksDetected ? "text-rose-400" : "text-emerald-400"}`}>
+          <span
+            className={`text-xs font-mono font-bold truncate block ${currentEgg.cracksDetected ? "text-rose-400" : "text-emerald-400"}`}
+          >
             {currentEgg.cracksDetected ? "Check Fissure" : "Clean / Sound"}
           </span>
         </div>
@@ -58,7 +62,8 @@ export function GradeDecisionCard({ currentEgg }: GradeDecisionCardProps) {
           </span>
         </div>
         <p className="text-[10px] text-slate-400 leading-relaxed">
-          Grade AA at Origin requires min. 87% AA quality; max 13% A or B combined, max 5% Checks, max 0.50% Dirties/Leakers/Loss.
+          Grade AA at Origin requires min. 87% AA quality; max 13% A or B combined, max 5% Checks,
+          max 0.50% Dirties/Leakers/Loss.
         </p>
       </div>
     </div>

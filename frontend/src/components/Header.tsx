@@ -84,9 +84,7 @@ export function Header({ activeTab, onTabChange, systemHealthy }: HeaderProps) {
           <span
             className={cn(
               "w-2 h-2 rounded-full",
-              systemHealthy
-                ? "bg-emerald-500 shadow-sm shadow-emerald-500"
-                : "bg-rose-500"
+              systemHealthy ? "bg-emerald-500 shadow-sm shadow-emerald-500" : "bg-rose-500"
             )}
           />
           <span className="text-slate-300">
@@ -97,4 +95,3 @@ export function Header({ activeTab, onTabChange, systemHealthy }: HeaderProps) {
     </header>
   );
 }
-

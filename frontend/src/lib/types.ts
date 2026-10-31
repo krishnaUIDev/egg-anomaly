@@ -60,7 +60,15 @@ export type ActiveTab = "single" | "batch" | "analytics";
 
 export interface OvoEggScenario {
   sampleName: string;
-  grade: "AA" | "A" | "B" | "B / Check" | "Inedible / Loss" | "Dirty / Downgraded" | "Loss / Leaker" | string;
+  grade:
+    | "AA"
+    | "A"
+    | "B"
+    | "B / Check"
+    | "Inedible / Loss"
+    | "Dirty / Downgraded"
+    | "Loss / Leaker"
+    | string;
   confidence: number;
   airCellMm: number;
   airCellInch: string;

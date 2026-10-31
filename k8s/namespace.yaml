@@ -5,4 +5,3 @@ metadata:
   labels:
     app.kubernetes.io/name: eggscan
     app.kubernetes.io/environment: production
-

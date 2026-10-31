@@ -28,6 +28,7 @@ export default function EggScanApp() {
   // Auto-load clean_brown sample on first load if desirable, or let user pick
   useEffect(() => {
     handleSelectSample("clean_brown.jpg");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function handleFileSelected(file: File | undefined) {
@@ -61,8 +62,9 @@ export default function EggScanApp() {
       reader.readAsDataURL(file);
 
       await executeInspection(file);
-    } catch (err: any) {
-      alert("Error loading sample: " + err.message);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      alert("Error loading sample: " + msg);
       setIsLoading(false);
     }
   }
@@ -73,8 +75,9 @@ export default function EggScanApp() {
       const data = await inspectSingleEgg(file, crackSensitivity, stainSensitivity);
       setResult(data);
       setActiveTab("annotated");
-    } catch (err: any) {
-      alert("Inspection failed: " + err.message);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      alert("Inspection failed: " + msg);
     } finally {
       setIsLoading(false);
     }
@@ -131,7 +134,14 @@ export default function EggScanApp() {
           {/* Capture Buttons */}
           <div className="action-buttons">
             <label className="btn btn-primary" htmlFor="cameraInput">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
                 <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
                 <circle cx="12" cy="13" r="4" />
               </svg>
@@ -148,7 +158,14 @@ export default function EggScanApp() {
             </label>
 
             <label className="btn btn-secondary" htmlFor="fileInput">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                 <polyline points="17 8 12 3 7 8" />
                 <line x1="12" y1="3" x2="12" y2="15" />
@@ -226,7 +243,9 @@ export default function EggScanApp() {
                 {result ? `${result.processing_time_ms} ms` : "-- ms"}
               </span>
               <span className="tag" id="detectionTag">
-                {result ? `Egg ROI: ${(result.detection_confidence * 100).toFixed(0)}%` : "Egg ROI: --"}
+                {result
+                  ? `Egg ROI: ${(result.detection_confidence * 100).toFixed(0)}%`
+                  : "Egg ROI: --"}
               </span>
             </div>
           </div>
@@ -269,6 +288,7 @@ export default function EggScanApp() {
             )}
 
             {currentImageSrc && (
+              /* eslint-disable-next-line @next/next/no-img-element */
               <img
                 id="displayImage"
                 src={currentImageSrc}
@@ -313,14 +333,10 @@ export default function EggScanApp() {
                 {result.defects.map((defect, idx) => (
                   <div key={idx} className={`defect-item ${defect.defect_type}`}>
                     <div>
-                      <div className="defect-title">
-                        {defect.defect_type.replace(/_/g, " ")}
-                      </div>
+                      <div className="defect-title">{defect.defect_type.replace(/_/g, " ")}</div>
                       <div className="defect-desc">{defect.description}</div>
                     </div>
-                    <div className="defect-badge">
-                      {(defect.confidence * 100).toFixed(0)}% conf
-                    </div>
+                    <div className="defect-badge">{(defect.confidence * 100).toFixed(0)}% conf</div>
                   </div>
                 ))}
               </div>

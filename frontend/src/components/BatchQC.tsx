@@ -23,7 +23,8 @@ export function BatchQC({ batchResult, isLoading, onUploadBatch }: BatchQCProps)
               <Layers className="w-5 h-5 text-sky-400" /> Commercial Tray Batch Inspection
             </h2>
             <p className="text-xs text-slate-400 mt-1">
-              Upload multiple egg photos simultaneously for high-throughput commercial sorting and quality control auditing.
+              Upload multiple egg photos simultaneously for high-throughput commercial sorting and
+              quality control auditing.
             </p>
           </div>
 
@@ -159,4 +160,3 @@ export function BatchQC({ batchResult, isLoading, onUploadBatch }: BatchQCProps)
     </div>
   );
 }
-

@@ -7,11 +7,13 @@
     "frontend"
   ],
   "scripts": {
+    "dev": "concurrently -n \"SERVER,CLIENT\" -c \"cyan,magenta\" --kill-others \"npm run dev:server\" \"npm run dev:frontend\"",
+    "dev:all": "npm run dev",
     "dev:frontend": "npm run dev --workspace=frontend",
+    "dev:server": "cd server && (../.venv/bin/python run.py || python3 run.py || python run.py)",
     "build:frontend": "npm run build --workspace=frontend",
     "start:frontend": "npm run start --workspace=frontend",
     "test:server": "PYTHONPATH=server .venv/bin/pytest server/tests/ -v",
-    "dev:server": "cd server && ../.venv/bin/python run.py",
     "docker:build": "docker compose build",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
@@ -25,6 +27,8 @@
     "usda-grading"
   ],
   "author": "Google DeepMind Advanced Agentic Coding",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^10.0.6"
+  }
 }
-

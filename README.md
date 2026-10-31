@@ -51,18 +51,19 @@ egg-anomaly/
 ### Option 1: Run with Monorepo NPM Scripts
 
 ```bash
-# 1. Install root & frontend dependencies
+# 1. Install dependencies
 npm install
 
-# 2. Run Next.js frontend development server
-npm run dev:frontend
-# -> http://localhost:3000
+# 2. Run BOTH Frontend (Next.js) & Server (FastAPI) concurrently with ONE command:
+npm run dev
+# -> Frontend: http://localhost:3000
+# -> Server:   http://localhost:8000 (API docs at /docs)
 
-# 3. In a second terminal, run the Python server
-npm run dev:server
-# -> http://localhost:8000 (API docs at /docs)
+# Or run individually if preferred:
+npm run dev:frontend   # Next.js only
+npm run dev:server     # FastAPI only
 
-# 4. Run automated server test suite
+# Run automated server test suite:
 npm run test:server
 ```
 

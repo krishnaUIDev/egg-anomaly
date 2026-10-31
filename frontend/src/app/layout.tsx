@@ -2,8 +2,8 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "OvoGrade Enterprise AI - Egg Defect & USDA Quality Grading",
-  description: "Automated Mobile Computer Vision & Real-time Candling Anomaly System (USDA 7 CFR §56 Compliant).",
+  title: "EggScan AI | Real-time Anomaly Detection & Quality Grading",
+  description: "Phone camera egg inspection with deep anomaly detection and USDA commercial grading.",
 };
 
 export const viewport: Viewport = {
@@ -23,7 +23,7 @@ export default function RootLayout({
       <head>
         <meta name="color-scheme" content="light dark" />
       </head>
-      <body className="min-h-full flex flex-col bg-slate-950 text-slate-100">{children}</body>
+      <body>{children}</body>
     </html>
   );
 }

@@ -1,249 +1,350 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import { OvoHeader } from "../components/OvoHeader";
-import { ViewfinderHUD } from "../components/ViewfinderHUD";
-import { QuickControls } from "../components/QuickControls";
-import { TelemetryMatrix } from "../components/TelemetryMatrix";
-import { GradeDecisionCard } from "../components/GradeDecisionCard";
-import { LotDistributionCard } from "../components/LotDistributionCard";
-import { InspectionLogStream } from "../components/InspectionLogStream";
-import { COAModal } from "../components/COAModal";
-
-import { OvoEggScenario, LotStats, LogEntry, DefectItem } from "../lib/types";
-import { BENCHMARK_SCENARIOS, INITIAL_LOG_SEEDS } from "../lib/constants";
+import React, { useState, useRef, useEffect } from "react";
 import { inspectSingleEgg } from "../lib/api";
+import { InspectionResult, ViewLayer } from "../lib/types";
 
-export default function OvoGradeApp() {
-  // System State
-  const [isWebcamActive, setIsWebcamActive] = useState(false);
-  const [isSimRunning, setIsSimRunning] = useState(true);
-  const [candlingActive, setCandlingActive] = useState(false);
-  const [torchActive, setTorchActive] = useState(false);
-  const [activeSampleIndex, setActiveSampleIndex] = useState(0);
-  const [currentEgg, setCurrentEgg] = useState<OvoEggScenario>(BENCHMARK_SCENARIOS[0]);
-  const [isInspecting, setIsInspecting] = useState(false);
-  const [inferLatencyMs, setInferLatencyMs] = useState(14.2);
-  const [fps, setFps] = useState(28.4);
-  const [isCOAModalOpen, setIsCOAModalOpen] = useState(false);
+const BENCHMARK_SAMPLES = [
+  { id: "clean_brown.jpg", label: "Clean Brown (Grade A)" },
+  { id: "clean_white.jpg", label: "Clean White (Grade A)" },
+  { id: "crack_fissure.jpg", label: "Crack Fissure (Reject)" },
+  { id: "dirt_stain.jpg", label: "Dirt Stain (Grade B)" },
+  { id: "blood_spot.jpg", label: "Blood Spot (Reject)" },
+  { id: "deformed_egg.jpg", label: "Deformed Shell (Grade B)" },
+];
 
-  // Lot Statistics State
-  const [stats, setStats] = useState<LotStats>({
-    totalInspected: 340,
-    gradeAA: 302,
-    gradeA: 28,
-    gradeB: 7,
-    loss: 3,
-  });
+export default function EggScanApp() {
+  const [activeTab, setActiveTab] = useState<ViewLayer>("annotated");
+  const [crackSensitivity, setCrackSensitivity] = useState(0.5);
+  const [stainSensitivity, setStainSensitivity] = useState(0.5);
+  const [isLoading, setIsLoading] = useState(false);
+  const [result, setResult] = useState<InspectionResult | null>(null);
+  const [rawPreview, setRawPreview] = useState<string | null>(null);
+  const [selectedSample, setSelectedSample] = useState<string | null>(null);
 
-  // Recent Inspection Stream Logs
-  const [logs, setLogs] = useState<LogEntry[]>(INITIAL_LOG_SEEDS);
+  const cameraInputRef = useRef<HTMLInputElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const videoTrackRef = useRef<MediaStreamTrack | null>(null);
-
-  // Simulated FPS jitter for real-time industrial HUD feel
+  // Auto-load clean_brown sample on first load if desirable, or let user pick
   useEffect(() => {
-    const interval = setInterval(() => {
-      setFps(28.0 + Math.random() * 1.5);
-    }, 1500);
-    return () => clearInterval(interval);
+    handleSelectSample("clean_brown.jpg");
   }, []);
 
-  // Start Phone Camera
-  async function handleStartCamera() {
+  async function handleFileSelected(file: File | undefined) {
+    if (!file) return;
+    setSelectedSample(null);
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setRawPreview(e.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    await executeInspection(file);
+  }
+
+  async function handleSelectSample(filename: string) {
+    setSelectedSample(filename);
+    setIsLoading(true);
     try {
-      const constraints: MediaStreamConstraints = {
-        video: {
-          facingMode: { ideal: "environment" },
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-        },
-      };
-
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      const videoEl = document.querySelector("video") as HTMLVideoElement | null;
-      if (videoEl) {
-        videoEl.srcObject = stream;
-        videoEl.play();
+      const resp = await fetch(`/samples/${filename}`);
+      if (!resp.ok) {
+        throw new Error(`Failed to load sample image (status ${resp.status})`);
       }
-      videoTrackRef.current = stream.getVideoTracks()[0] || null;
-      setIsWebcamActive(true);
-      setIsSimRunning(false);
-    } catch (err) {
-      console.warn("Direct phone camera not available. Running simulated conveyor feed.", err);
-      setIsSimRunning(true);
-    }
-  }
+      const blob = await resp.blob();
+      const file = new File([blob], filename, { type: "image/jpeg" });
 
-  // Toggle Hardware Torch Flash
-  async function handleToggleTorch() {
-    const nextState = !torchActive;
-    setTorchActive(nextState);
-
-    if (videoTrackRef.current) {
-      try {
-        const track = videoTrackRef.current as any;
-        const capabilities = track.getCapabilities?.() || {};
-        if (capabilities.torch) {
-          await track.applyConstraints({
-            advanced: [{ torch: nextState }],
-          });
-        }
-      } catch (e) {
-        console.warn("Hardware torch error:", e);
-      }
-    }
-  }
-
-  // Toggle Candling Transillumination Mode
-  function handleToggleCandling() {
-    setCandlingActive((prev) => !prev);
-  }
-
-  // Cycle Through Known Benchmark Scenarios
-  function handleCycleAnomaly() {
-    const nextIdx = (activeSampleIndex + 1) % BENCHMARK_SCENARIOS.length;
-    setActiveSampleIndex(nextIdx);
-    const scenario = BENCHMARK_SCENARIOS[nextIdx];
-    setCurrentEgg(scenario);
-
-    // Auto-enable candling if defect is an internal blood spot or enlarged air cell
-    if (scenario.bloodSpotDetected || scenario.airCellMm > 4.0) {
-      setCandlingActive(true);
-    }
-  }
-
-  // Handle uploaded photo
-  async function handleFileUpload(file: File) {
-    setIsInspecting(true);
-    const start = performance.now();
-    try {
-      const result = await inspectSingleEgg(file, 0.5, 0.5);
-      const elapsed = performance.now() - start;
-      setInferLatencyMs(elapsed);
-
-      const hasCrack = result.defects.some((d: DefectItem) => d.defect_type === "crack");
-      const hasBlood = result.defects.some((d: DefectItem) => d.defect_type === "blood_spot");
-      const stainDefect = result.defects.find((d: DefectItem) => d.defect_type === "dirt_stain");
-      const dirtPct = stainDefect ? stainDefect.area_ratio * 100 : 0;
-
-      const updatedEgg: OvoEggScenario = {
-        sampleName: file.name,
-        grade: result.grade === "Grade A" ? "AA" : result.grade === "Grade B" ? "B" : "Loss",
-        confidence: result.detection_confidence,
-        airCellMm: result.grade === "Grade A" ? 2.8 : 4.5,
-        airCellInch: result.grade === "Grade A" ? '7/64"' : '3/16"',
-        shellCondition: hasCrack ? "Structural check/fracture" : "Normal, Clean",
-        cracksDetected: hasCrack,
-        crackSeverity: hasCrack ? 0.85 : 0.02,
-        bloodSpotDetected: hasBlood,
-        bloodSpotMm: hasBlood ? 3.5 : 0.0,
-        dirtPercentage: dirtPct,
-        weightGrams: 58.5,
-        yolkCentering: "Centered, Indistinct",
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setRawPreview(e.target?.result as string);
       };
+      reader.readAsDataURL(file);
 
-      setCurrentEgg(updatedEgg);
-      recordInspection(updatedEgg);
+      await executeInspection(file);
     } catch (err: any) {
-      alert("Inspection analysis failed: " + err.message);
-    } finally {
-      setIsInspecting(false);
+      alert("Error loading sample: " + err.message);
+      setIsLoading(false);
     }
   }
 
-  // Capture & Log Inspection Transaction (Record SKU)
-  function handleCaptureSKU() {
-    recordInspection(currentEgg);
+  async function executeInspection(file: File) {
+    setIsLoading(true);
+    try {
+      const data = await inspectSingleEgg(file, crackSensitivity, stainSensitivity);
+      setResult(data);
+      setActiveTab("annotated");
+    } catch (err: any) {
+      alert("Inspection failed: " + err.message);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
-  function recordInspection(egg: OvoEggScenario) {
-    const timestamp = new Date().toLocaleTimeString();
-    const skuId = `SKU-${Math.floor(100000 + Math.random() * 900000)}`;
+  // Determine current image to render based on active tab
+  let currentImageSrc: string | null = null;
+  if (result) {
+    if (activeTab === "annotated") {
+      currentImageSrc = result.annotated_image_data || rawPreview || null;
+    } else if (activeTab === "heatmap") {
+      currentImageSrc = result.heatmap_data || result.annotated_image_data || rawPreview || null;
+    } else {
+      currentImageSrc = rawPreview || result.annotated_image_data || null;
+    }
+  }
 
-    // Update tallies
-    setStats((prev) => {
-      const isAA = egg.grade === "AA";
-      const isA = egg.grade === "A";
-      const isB = egg.grade.includes("B");
-      return {
-        totalInspected: prev.totalInspected + 1,
-        gradeAA: isAA ? prev.gradeAA + 1 : prev.gradeAA,
-        gradeA: isA ? prev.gradeA + 1 : prev.gradeA,
-        gradeB: isB ? prev.gradeB + 1 : prev.gradeB,
-        loss: !isAA && !isA && !isB ? prev.loss + 1 : prev.loss,
-      };
-    });
-
-    // Prepend Log Item
-    setLogs((prev) => [
-      {
-        id: Math.random().toString(),
-        time: timestamp,
-        sku: skuId,
-        name: egg.sampleName,
-        grade: egg.grade,
-        weight: `${egg.weightGrams}g`,
-      },
-      ...prev,
-    ]);
+  // Grade banner styling class
+  let gradeClass = "grade-a";
+  if (result) {
+    if (result.grade === "Reject") {
+      gradeClass = "grade-reject";
+    } else if (result.grade === "Grade B") {
+      gradeClass = "grade-b";
+    }
   }
 
   return (
-    <div className="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans antialiased selection:bg-emerald-500 selection:text-white">
-      {/* Top Enterprise App Header */}
-      <OvoHeader
-        fps={fps}
-        lotNumber="Lot #US-8842"
-        onOpenCOA={() => setIsCOAModalOpen(true)}
-      />
+    <div className="app-container">
+      {/* Header */}
+      <header className="header">
+        <div className="logo-area">
+          <div className="logo-icon">🥚</div>
+          <div>
+            <h1>EggScan AI</h1>
+            <p className="subtitle">Real-time Anomaly Detection & Quality Grading</p>
+          </div>
+        </div>
+        <div className="status-indicator" id="statusPill">
+          <span className={`status-dot ${isLoading ? "pulse" : ""}`} />
+          <span id="statusText">{isLoading ? "Analyzing..." : "System Ready"}</span>
+        </div>
+      </header>
 
-      {/* Main Dual-Pane Viewport */}
-      <main className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-3 p-3 max-w-[1720px] mx-auto w-full">
-        {/* Left Column: Viewfinder & Real-Time Matrix (cols 1-7) */}
-        <section className="lg:col-span-7 flex flex-col gap-3">
-          <ViewfinderHUD
-            currentEgg={currentEgg}
-            isWebcamActive={isWebcamActive}
-            isSimRunning={isSimRunning}
-            candlingActive={candlingActive}
-            inferLatencyMs={inferLatencyMs}
-            onStartCamera={handleStartCamera}
-            onStartSimulation={() => {
-              setIsSimRunning(true);
-              setIsWebcamActive(false);
-            }}
-            onFileUpload={handleFileUpload}
-          />
+      {/* Main Grid Layout */}
+      <main className="main-layout">
+        {/* Left: Capture & Controls Card */}
+        <section className="card capture-card">
+          <h2>Capture or Select Egg</h2>
+          <p className="section-desc">
+            Snap a photo with your phone camera, upload an image, or pick a sample below.
+          </p>
 
-          <QuickControls
-            candlingActive={candlingActive}
-            torchActive={torchActive}
-            activeSampleName={currentEgg.sampleName}
-            onToggleCandling={handleToggleCandling}
-            onToggleTorch={handleToggleTorch}
-            onCycleAnomaly={handleCycleAnomaly}
-            onCaptureSKU={handleCaptureSKU}
-            isInspecting={isInspecting}
-          />
+          {/* Capture Buttons */}
+          <div className="action-buttons">
+            <label className="btn btn-primary" htmlFor="cameraInput">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                <circle cx="12" cy="13" r="4" />
+              </svg>
+              <span>Take Phone Photo</span>
+              <input
+                ref={cameraInputRef}
+                type="file"
+                id="cameraInput"
+                accept="image/*"
+                capture="environment"
+                className="file-input"
+                onChange={(e) => handleFileSelected(e.target.files?.[0])}
+              />
+            </label>
 
-          <TelemetryMatrix currentEgg={currentEgg} />
+            <label className="btn btn-secondary" htmlFor="fileInput">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" y1="3" x2="12" y2="15" />
+              </svg>
+              <span>Upload Image</span>
+              <input
+                ref={fileInputRef}
+                type="file"
+                id="fileInput"
+                accept="image/*"
+                className="file-input"
+                onChange={(e) => handleFileSelected(e.target.files?.[0])}
+              />
+            </label>
+          </div>
+
+          {/* Sample Selector */}
+          <div className="samples-section">
+            <span className="samples-title">⚡ Quick Test Benchmark Samples:</span>
+            <div className="sample-chips" id="sampleChips">
+              {BENCHMARK_SAMPLES.map((sample) => (
+                <button
+                  key={sample.id}
+                  onClick={() => handleSelectSample(sample.id)}
+                  className={`sample-chip ${selectedSample === sample.id ? "active" : ""}`}
+                >
+                  {sample.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Sensitivity Controls Accordion */}
+          <details className="sensitivity-accordion" open>
+            <summary>⚙️ Detection Tuning & Sensitivity</summary>
+            <div className="slider-group">
+              <div className="slider-row">
+                <label htmlFor="crackSensitivity">
+                  Crack Detection Sensitivity: <span>{crackSensitivity.toFixed(2)}</span>
+                </label>
+                <input
+                  type="range"
+                  id="crackSensitivity"
+                  min="0.1"
+                  max="1.0"
+                  step="0.05"
+                  value={crackSensitivity}
+                  onChange={(e) => setCrackSensitivity(parseFloat(e.target.value))}
+                />
+              </div>
+              <div className="slider-row">
+                <label htmlFor="stainSensitivity">
+                  Stain & Dirt Sensitivity: <span>{stainSensitivity.toFixed(2)}</span>
+                </label>
+                <input
+                  type="range"
+                  id="stainSensitivity"
+                  min="0.1"
+                  max="1.0"
+                  step="0.05"
+                  value={stainSensitivity}
+                  onChange={(e) => setStainSensitivity(parseFloat(e.target.value))}
+                />
+              </div>
+            </div>
+          </details>
         </section>
 
-        {/* Right Column: USDA 7 CFR Part 56 Decision Card, Lot Distribution & Logs (cols 8-12) */}
-        <section className="lg:col-span-5 flex flex-col gap-3">
-          <GradeDecisionCard currentEgg={currentEgg} />
-          <LotDistributionCard stats={stats} />
-          <InspectionLogStream logs={logs} onClear={() => setLogs([])} />
+        {/* Right: Inspection Results View */}
+        <section className="card results-card" id="resultsSection">
+          <div className="results-header">
+            <h2>Inspection Output</h2>
+            <div className="meta-tags" id="metaTags">
+              <span className="tag" id="latencyTag">
+                {result ? `${result.processing_time_ms} ms` : "-- ms"}
+              </span>
+              <span className="tag" id="detectionTag">
+                {result ? `Egg ROI: ${(result.detection_confidence * 100).toFixed(0)}%` : "Egg ROI: --"}
+              </span>
+            </div>
+          </div>
+
+          {/* View Tabs */}
+          <div className="view-tabs" role="tablist">
+            <button
+              className={`tab-btn ${activeTab === "annotated" ? "active" : ""}`}
+              onClick={() => setActiveTab("annotated")}
+              role="tab"
+              aria-selected={activeTab === "annotated"}
+            >
+              Annotated Detection
+            </button>
+            <button
+              className={`tab-btn ${activeTab === "heatmap" ? "active" : ""}`}
+              onClick={() => setActiveTab("heatmap")}
+              role="tab"
+              aria-selected={activeTab === "heatmap"}
+            >
+              Anomaly Heatmap
+            </button>
+            <button
+              className={`tab-btn ${activeTab === "original" ? "active" : ""}`}
+              onClick={() => setActiveTab("original")}
+              role="tab"
+              aria-selected={activeTab === "original"}
+            >
+              Original Photo
+            </button>
+          </div>
+
+          {/* Image Display Area */}
+          <div className="preview-stage" id="previewStage">
+            {!currentImageSrc && !isLoading && (
+              <div className="empty-placeholder" id="emptyPlaceholder">
+                <div className="placeholder-icon">📸</div>
+                <p>Take a phone photo or pick a sample to view inspection analysis</p>
+              </div>
+            )}
+
+            {currentImageSrc && (
+              <img
+                id="displayImage"
+                src={currentImageSrc}
+                alt="Egg inspection display"
+                className="preview-img"
+              />
+            )}
+
+            {isLoading && (
+              <div className="spinner-overlay" id="spinnerOverlay">
+                <div className="spinner" />
+                <p>Analyzing egg shell structure & defects...</p>
+              </div>
+            )}
+          </div>
+
+          {/* Grade Banner & Score */}
+          {result && (
+            <div className={`grade-banner ${gradeClass}`} id="gradeBanner">
+              <div className="grade-badge" id="gradeBadge">
+                {result.grade}
+              </div>
+              <div className="grade-info">
+                <div className="grade-score-row">
+                  <span className="quality-label">Quality Score:</span>
+                  <span className="quality-score-value" id="qualityScoreVal">
+                    {result.quality_score} / 100
+                  </span>
+                </div>
+                <p className="recommendation-text" id="recommendationText">
+                  {result.recommendation}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Defects List */}
+          {result && result.defects && result.defects.length > 0 && (
+            <div className="defects-container" id="defectsContainer">
+              <h3>Detected Defects & Anomalies</h3>
+              <div className="defects-list" id="defectsList">
+                {result.defects.map((defect, idx) => (
+                  <div key={idx} className={`defect-item ${defect.defect_type}`}>
+                    <div>
+                      <div className="defect-title">
+                        {defect.defect_type.replace(/_/g, " ")}
+                      </div>
+                      <div className="defect-desc">{defect.description}</div>
+                    </div>
+                    <div className="defect-badge">
+                      {(defect.confidence * 100).toFixed(0)}% conf
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Audit Log Summary */}
+          {result && result.reasons && result.reasons.length > 0 && (
+            <div className="audit-summary" id="auditSummary">
+              <h4>Inspection Audit Trail:</h4>
+              <ul id="auditReasons">
+                {result.reasons.map((reason, idx) => (
+                  <li key={idx}>{reason}</li>
+                ))}
+              </ul>
+            </div>
+          )}
         </section>
       </main>
 
-      {/* Audit Report / COA Export Modal */}
-      <COAModal
-        isOpen={isCOAModalOpen}
-        onClose={() => setIsCOAModalOpen(false)}
-        stats={stats}
-      />
+      {/* Footer */}
+      <footer className="footer">
+        <p>EggScan AI • Dual-Engine Phone Camera Inspection • USDA Commercial Quality Standards</p>
+      </footer>
     </div>
   );
 }

@@ -36,9 +36,9 @@
       <main class="main-layout">
         <!-- Left / Top: Capture & Controls Card -->
         <section class="card capture-card">
-          <h2>Capture or Select Egg</h2>
+          <h2>Capture Egg</h2>
           <p class="section-desc">
-            Snap a photo with your phone camera, upload an image, or pick a sample below.
+            Snap a photo with your phone camera or upload an image to begin inspection.
           </p>
 
           <!-- Capture Buttons -->
@@ -83,28 +83,6 @@
               <span>Upload Image</span>
               <input type="file" id="fileInput" accept="image/*" class="file-input" />
             </label>
-          </div>
-
-          <!-- Sample Selector -->
-          <div class="samples-section">
-            <span class="samples-title">⚡ Quick Test Benchmark Samples:</span>
-            <div class="sample-chips" id="sampleChips">
-              <!-- Populated via API -->
-              <button class="sample-chip" data-sample="clean_brown.jpg">
-                Clean Brown (Grade A)
-              </button>
-              <button class="sample-chip" data-sample="clean_white.jpg">
-                Clean White (Grade A)
-              </button>
-              <button class="sample-chip" data-sample="crack_fissure.jpg">
-                Crack Fissure (Reject)
-              </button>
-              <button class="sample-chip" data-sample="dirt_stain.jpg">Dirt Stain (Grade B)</button>
-              <button class="sample-chip" data-sample="blood_spot.jpg">Blood Spot (Reject)</button>
-              <button class="sample-chip" data-sample="deformed_egg.jpg">
-                Deformed Shell (Grade B)
-              </button>
-            </div>
           </div>
 
           <!-- Sensitivity Controls Accordion -->
@@ -162,7 +140,7 @@
           <div class="preview-stage" id="previewStage">
             <div class="empty-placeholder" id="emptyPlaceholder">
               <div class="placeholder-icon">📸</div>
-              <p>Take a phone photo or pick a sample to view inspection analysis</p>
+              <p>Take a phone photo or upload an image to view inspection analysis</p>
             </div>
             <img id="displayImage" src="" alt="Egg inspection display" class="preview-img hidden" />
             <div class="spinner-overlay hidden" id="spinnerOverlay">

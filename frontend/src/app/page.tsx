@@ -1,17 +1,8 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { inspectSingleEgg } from "../lib/api";
 import { InspectionResult, ViewLayer } from "../lib/types";
-
-const BENCHMARK_SAMPLES = [
-  { id: "clean_brown.jpg", label: "Clean Brown (Grade A)" },
-  { id: "clean_white.jpg", label: "Clean White (Grade A)" },
-  { id: "crack_fissure.jpg", label: "Crack Fissure (Reject)" },
-  { id: "dirt_stain.jpg", label: "Dirt Stain (Grade B)" },
-  { id: "blood_spot.jpg", label: "Blood Spot (Reject)" },
-  { id: "deformed_egg.jpg", label: "Deformed Shell (Grade B)" },
-];
 
 export default function EggScanApp() {
   const [activeTab, setActiveTab] = useState<ViewLayer>("annotated");
@@ -20,20 +11,12 @@ export default function EggScanApp() {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<InspectionResult | null>(null);
   const [rawPreview, setRawPreview] = useState<string | null>(null);
-  const [selectedSample, setSelectedSample] = useState<string | null>(null);
 
   const cameraInputRef = useRef<HTMLInputElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  // Auto-load clean_brown sample on first load if desirable, or let user pick
-  useEffect(() => {
-    handleSelectSample("clean_brown.jpg");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   async function handleFileSelected(file: File | undefined) {
     if (!file) return;
-    setSelectedSample(null);
 
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -42,31 +25,6 @@ export default function EggScanApp() {
     reader.readAsDataURL(file);
 
     await executeInspection(file);
-  }
-
-  async function handleSelectSample(filename: string) {
-    setSelectedSample(filename);
-    setIsLoading(true);
-    try {
-      const resp = await fetch(`/samples/${filename}`);
-      if (!resp.ok) {
-        throw new Error(`Failed to load sample image (status ${resp.status})`);
-      }
-      const blob = await resp.blob();
-      const file = new File([blob], filename, { type: "image/jpeg" });
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setRawPreview(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
-
-      await executeInspection(file);
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : String(err);
-      alert("Error loading sample: " + msg);
-      setIsLoading(false);
-    }
   }
 
   async function executeInspection(file: File) {
@@ -126,9 +84,9 @@ export default function EggScanApp() {
       <main className="main-layout">
         {/* Left: Capture & Controls Card */}
         <section className="card capture-card">
-          <h2>Capture or Select Egg</h2>
+          <h2>Capture Egg</h2>
           <p className="section-desc">
-            Snap a photo with your phone camera, upload an image, or pick a sample below.
+            Snap a photo with your phone camera or upload an image to begin real-time analysis.
           </p>
 
           {/* Capture Buttons */}
@@ -180,22 +138,6 @@ export default function EggScanApp() {
                 onChange={(e) => handleFileSelected(e.target.files?.[0])}
               />
             </label>
-          </div>
-
-          {/* Sample Selector */}
-          <div className="samples-section">
-            <span className="samples-title">⚡ Quick Test Benchmark Samples:</span>
-            <div className="sample-chips" id="sampleChips">
-              {BENCHMARK_SAMPLES.map((sample) => (
-                <button
-                  key={sample.id}
-                  onClick={() => handleSelectSample(sample.id)}
-                  className={`sample-chip ${selectedSample === sample.id ? "active" : ""}`}
-                >
-                  {sample.label}
-                </button>
-              ))}
-            </div>
           </div>
 
           {/* Sensitivity Controls Accordion */}
@@ -283,7 +225,7 @@ export default function EggScanApp() {
             {!currentImageSrc && !isLoading && (
               <div className="empty-placeholder" id="emptyPlaceholder">
                 <div className="placeholder-icon">📸</div>
-                <p>Take a phone photo or pick a sample to view inspection analysis</p>
+                <p>Take a phone photo or upload an image to view inspection analysis</p>
               </div>
             )}
 

@@ -44,8 +44,8 @@ document.addEventListener("DOMContentLoaded", () => {
   cameraInput.addEventListener("change", (e) => handleImageSelection(e.target.files[0]));
   fileInput.addEventListener("change", (e) => handleImageSelection(e.target.files[0]));
 
-  // Benchmark Sample Chips
-  sampleChips.addEventListener("click", async (e) => {
+  // Benchmark Sample Chips (if present)
+  sampleChips?.addEventListener("click", async (e) => {
     const chip = e.target.closest(".sample-chip");
     if (!chip) return;
     const sampleFilename = chip.getAttribute("data-sample");

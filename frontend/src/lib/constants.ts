@@ -1,4 +1,4 @@
-import { SampleEgg } from "./types";
+import { OvoEggScenario, LogEntry, SampleEgg } from "./types";
 
 export const SAMPLE_EGGS: SampleEgg[] = [
   {
@@ -57,3 +57,103 @@ export const USDA_DIRECTIVES = [
   },
 ];
 
+export const BENCHMARK_SCENARIOS: OvoEggScenario[] = [
+  {
+    sampleName: "Sound Standard AA",
+    grade: "AA",
+    confidence: 0.984,
+    airCellMm: 2.8,
+    airCellInch: '7/64"',
+    shellCondition: "Normal, Unbroken, Clean",
+    cracksDetected: false,
+    crackSeverity: 0.01,
+    bloodSpotDetected: false,
+    bloodSpotMm: 0.0,
+    dirtPercentage: 0.0,
+    weightGrams: 59.4,
+    yolkCentering: "Centered, Indistinct",
+  },
+  {
+    sampleName: "Hairline Shell Crack (Check)",
+    grade: "B / Check",
+    confidence: 0.941,
+    airCellMm: 3.5,
+    airCellInch: '9/64"',
+    shellCondition: "Crack in shell without membrane rupture",
+    cracksDetected: true,
+    crackSeverity: 0.78,
+    bloodSpotDetected: false,
+    bloodSpotMm: 0.0,
+    dirtPercentage: 0.0,
+    weightGrams: 58.1,
+    yolkCentering: "Fairly Well Centered",
+  },
+  {
+    sampleName: "Candled Blood Spot (Loss Reject)",
+    grade: "Inedible / Loss",
+    confidence: 0.967,
+    airCellMm: 4.8,
+    airCellInch: '3/16"',
+    shellCondition: "Normal Shell",
+    cracksDetected: false,
+    crackSeverity: 0.04,
+    bloodSpotDetected: true,
+    bloodSpotMm: 4.2, // > 1/8 inch constitutes Loss under USDA §56
+    dirtPercentage: 0.0,
+    weightGrams: 61.2,
+    yolkCentering: "Enlarged, Blood Diffusion",
+  },
+  {
+    sampleName: "Adhering Dirt & Surface Stains",
+    grade: "Dirty / Downgraded",
+    confidence: 0.923,
+    airCellMm: 3.2,
+    airCellInch: '1/8"',
+    shellCondition: "Prominent foreign stains > 1/16 surface",
+    cracksDetected: false,
+    crackSeverity: 0.03,
+    bloodSpotDetected: false,
+    bloodSpotMm: 0.0,
+    dirtPercentage: 8.4,
+    weightGrams: 57.8,
+    yolkCentering: "Normal",
+  },
+  {
+    sampleName: "Enlarged Air Cell (Grade B)",
+    grade: "Grade B",
+    confidence: 0.952,
+    airCellMm: 6.1, // > 3/16 inch
+    airCellInch: '1/4"',
+    shellCondition: "Slightly Abnormal Ridge",
+    cracksDetected: false,
+    crackSeverity: 0.08,
+    bloodSpotDetected: false,
+    bloodSpotMm: 0.0,
+    dirtPercentage: 0.4,
+    weightGrams: 56.5,
+    yolkCentering: "Weak White, Freely Mobile Yolk",
+  },
+  {
+    sampleName: "Critical Leaker (Membrane Ruptured)",
+    grade: "Loss / Leaker",
+    confidence: 0.991,
+    airCellMm: 0.0,
+    airCellInch: "N/A",
+    shellCondition: "Cracked with albumen exudation",
+    cracksDetected: true,
+    crackSeverity: 0.96,
+    bloodSpotDetected: false,
+    bloodSpotMm: 0.0,
+    dirtPercentage: 2.1,
+    weightGrams: 53.2,
+    yolkCentering: "Collapsed",
+  },
+];
+
+export const INITIAL_LOG_SEEDS: LogEntry[] = [
+  { id: "1", time: "16:48:12", sku: "SKU-892101", grade: "AA", name: "Sound AA Normal", weight: "59.2g" },
+  { id: "2", time: "16:48:19", sku: "SKU-892102", grade: "AA", name: "Sound AA Normal", weight: "60.1g" },
+  { id: "3", time: "16:48:26", sku: "SKU-892103", grade: "B", name: 'Enlarged Air Cell (1/4")', weight: "55.8g" },
+  { id: "4", time: "16:48:33", sku: "SKU-892104", grade: "AA", name: "Sound AA Normal", weight: "58.7g" },
+  { id: "5", time: "16:48:40", sku: "SKU-892105", grade: "Loss", name: "Hairline Leaker Detected", weight: "54.0g" },
+];

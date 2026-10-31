@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import { Camera, Upload, Sparkles } from "lucide-react";
-import { InspectionResult, ViewLayer } from "../lib/types";
+import { InspectionResult, ViewLayer, SampleEgg } from "../lib/types";
 import { SAMPLE_EGGS, USDA_DIRECTIVES } from "../lib/constants";
 import { DiagnosticCanvas } from "./DiagnosticCanvas";
 import { SensitivityControls } from "./SensitivityControls";
@@ -90,7 +90,7 @@ export function InspectionStudio({
               </span>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {SAMPLE_EGGS.map((sample) => (
+              {SAMPLE_EGGS.map((sample: SampleEgg) => (
                 <button
                   key={sample.id}
                   onClick={() => onSelectSample(sample.id)}
@@ -117,7 +117,7 @@ export function InspectionStudio({
         <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-4 text-xs space-y-2">
           <h3 className="font-bold text-slate-300">USDA Egg Sorting Directives:</h3>
           <ul className="space-y-1.5 text-slate-400 text-[11px]">
-            {USDA_DIRECTIVES.map((d) => (
+            {USDA_DIRECTIVES.map((d: { grade: string; color: string; desc: string }) => (
               <li key={d.grade} className="flex items-start gap-1.5">
                 <span className={`w-1.5 h-1.5 rounded-full mt-1 shrink-0 ${d.color}`} />
                 <span>

@@ -1,5 +1,5 @@
 /**
- * Core type definitions for EggScan Enterprise Frontend.
+ * Core type definitions for OvoGrade Enterprise AI.
  */
 
 export interface DefectItem {
@@ -15,7 +15,7 @@ export interface InspectionResult {
   filename?: string;
   egg_detected: boolean;
   detection_confidence: number;
-  grade: "Grade A" | "Grade B" | "Reject";
+  grade: "Grade A" | "Grade B" | "Reject" | string;
   quality_score: number;
   is_acceptable: boolean;
   recommendation: string;
@@ -58,3 +58,35 @@ export interface SampleEgg {
 export type ViewLayer = "annotated" | "heatmap" | "original";
 export type ActiveTab = "single" | "batch" | "analytics";
 
+export interface OvoEggScenario {
+  sampleName: string;
+  grade: "AA" | "A" | "B" | "B / Check" | "Inedible / Loss" | "Dirty / Downgraded" | "Loss / Leaker" | string;
+  confidence: number;
+  airCellMm: number;
+  airCellInch: string;
+  shellCondition: string;
+  cracksDetected: boolean;
+  crackSeverity: number;
+  bloodSpotDetected: boolean;
+  bloodSpotMm: number;
+  dirtPercentage: number;
+  weightGrams: number;
+  yolkCentering: string;
+}
+
+export interface LotStats {
+  totalInspected: number;
+  gradeAA: number;
+  gradeA: number;
+  gradeB: number;
+  loss: number;
+}
+
+export interface LogEntry {
+  id: string;
+  time: string;
+  sku: string;
+  name: string;
+  grade: string;
+  weight: string;
+}

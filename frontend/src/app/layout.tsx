@@ -2,8 +2,8 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "EggScan Enterprise | AI Anomaly Detection & Quality Control",
-  description: "Enterprise multi-defect egg anomaly detection, phone camera inspection, and USDA commercial quality grading.",
+  title: "OvoGrade Enterprise AI - Egg Defect & USDA Quality Grading",
+  description: "Automated Mobile Computer Vision & Real-time Candling Anomaly System (USDA 7 CFR §56 Compliant).",
 };
 
 export const viewport: Viewport = {

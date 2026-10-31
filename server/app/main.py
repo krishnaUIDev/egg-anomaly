@@ -11,7 +11,7 @@ import numpy as np
 from PIL import Image
 from fastapi import FastAPI, File, UploadFile, Query, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.config import settings
@@ -56,7 +56,6 @@ INSPECTION_STATS = {
 
 engine = EggAnomalyEngine()
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-WEB_DIR = os.path.join(BASE_DIR, "web")
 SAMPLES_DIR = os.path.join(BASE_DIR, "datasets", "samples")
 
 
@@ -275,10 +274,15 @@ def list_samples():
 if os.path.exists(SAMPLES_DIR):
     app.mount("/samples", StaticFiles(directory=SAMPLES_DIR), name="samples")
 
-# Mount classic static web if needed
-if os.path.exists(WEB_DIR):
-    app.mount("/static", StaticFiles(directory=WEB_DIR), name="static")
 
-    @app.get("/")
-    def serve_frontend():
-        return FileResponse(os.path.join(WEB_DIR, "index.html"))
+@app.get("/", tags=["System"])
+def root_info():
+    """Root metadata & service discovery endpoint."""
+    return {
+        "service": settings.app_name,
+        "version": settings.app_version,
+        "status": "online",
+        "docs_url": "/docs",
+        "health_check": "/healthz",
+        "api_v1": "/api/v1",
+    }

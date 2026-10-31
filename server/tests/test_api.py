@@ -9,6 +9,12 @@ SAMPLES_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "datasets
 
 
 def test_health_and_probes():
+    # Root metadata endpoint
+    res_root = client.get("/")
+    assert res_root.status_code == 200
+    assert res_root.json()["status"] == "online"
+    assert "docs_url" in res_root.json()
+
     # Health
     res_health = client.get("/healthz")
     assert res_health.status_code == 200

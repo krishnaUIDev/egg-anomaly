@@ -39,15 +39,34 @@ export interface BatchSummary {
   items: InspectionResult[];
 }
 
+export interface PlcActuatorSignal {
+  pocket_label: string;
+  egg_id: number;
+  row: number;
+  col: number;
+  grade: string;
+  primary_defect?: string | null;
+  actuator_action: string;
+  solenoid_valve_id: number;
+  target_chute: string;
+  encoder_pulse_offset: number;
+  trigger_delay_ms: number;
+}
+
 export interface TrayEggItem {
   egg_id: number;
   bbox: [number, number, number, number];
+  row?: number;
+  col?: number;
+  pocket_label?: string;
   grade: "Grade A" | "Grade B" | "Reject" | string;
   quality_score: number;
   is_acceptable: boolean;
   defect_count: number;
   defects: DefectItem[];
   recommendation: string;
+  actuator_action?: string;
+  chute_target?: string;
 }
 
 export interface TrayInspectionResult {
@@ -61,6 +80,7 @@ export interface TrayInspectionResult {
   annotated_tray_image: string;
   eggs: TrayEggItem[];
   processing_time_ms: number;
+  plc_signals?: PlcActuatorSignal[];
 }
 
 export interface EnterpriseMetrics {

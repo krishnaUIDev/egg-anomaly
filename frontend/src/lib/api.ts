@@ -86,6 +86,28 @@ export async function inspectTray(
   return res.json();
 }
 
+export async function simulateConveyorFrame(
+  traySize: "30" | "12" | "6" = "30",
+  defectRate = 0.15,
+  crackSensitivity = 0.5,
+  stainSensitivity = 0.5
+): Promise<TrayInspectionResult> {
+  const query = new URLSearchParams({
+    tray_size: traySize,
+    defect_rate: defectRate.toFixed(2),
+    crack_sensitivity: crackSensitivity.toFixed(2),
+    stain_sensitivity: stainSensitivity.toFixed(2),
+  });
+
+  const res = await fetch(`/api/v1/conveyor/simulate-frame?${query.toString()}`);
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.detail || `Conveyor simulation failed with status ${res.status}`);
+  }
+
+  return res.json();
+}
+
 export async function fetchEnterpriseMetrics(): Promise<EnterpriseMetrics> {
   const res = await fetch("/api/v1/metrics");
   if (!res.ok) {

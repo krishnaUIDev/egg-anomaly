@@ -6,9 +6,10 @@ import { InspectionResult, ViewLayer } from "../lib/types";
 import { ThemeToggle } from "../components/ThemeToggle";
 import { TrayScanner } from "../components/TrayScanner";
 import { LiveViewfinder } from "../components/LiveViewfinder";
+import { ConveyorSimulator } from "../components/ConveyorSimulator";
 import { AnalyticsView } from "../components/AnalyticsView";
 
-type AppNavMode = "single" | "tray" | "viewfinder" | "analytics";
+type AppNavMode = "single" | "tray" | "viewfinder" | "conveyor" | "analytics";
 
 export default function EggScanApp() {
   const [navMode, setNavMode] = useState<AppNavMode>("single");
@@ -116,6 +117,17 @@ export default function EggScanApp() {
             >
               <span className="nav-tab-icon">📹</span>
               <span className="nav-tab-text">Live Viewfinder</span>
+            </button>
+
+            <button
+              type="button"
+              role="tab"
+              aria-selected={navMode === "conveyor"}
+              className={`nav-tab-item ${navMode === "conveyor" ? "active" : ""}`}
+              onClick={() => setNavMode("conveyor")}
+            >
+              <span className="nav-tab-icon">⚙️</span>
+              <span className="nav-tab-text">Conveyor Belt</span>
             </button>
 
             <button
@@ -371,7 +383,10 @@ export default function EggScanApp() {
       {/* View 3: Live Viewfinder HUD */}
       {navMode === "viewfinder" && <LiveViewfinder />}
 
-      {/* View 4: Plant Analytics */}
+      {/* View 4: Conveyor Belt Simulator */}
+      {navMode === "conveyor" && <ConveyorSimulator />}
+
+      {/* View 5: Plant Analytics */}
       {navMode === "analytics" && <AnalyticsView />}
 
       {/* Footer */}

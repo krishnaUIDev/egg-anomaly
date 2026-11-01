@@ -1408,3 +1408,735 @@ h1 {
   color: var(--text-muted);
   padding: 1rem 0;
 }
+
+/* ==========================================================================
+   Industrial Conveyor Simulator & PLC SCADA Telemetry
+   ========================================================================== */
+
+.conveyor-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+}
+
+.conveyor-header-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+}
+
+.scada-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--accent-blue);
+  background: rgba(14, 165, 233, 0.1);
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  border: 1px solid rgba(14, 165, 233, 0.25);
+  margin-bottom: 0.4rem;
+}
+
+.conveyor-subtext {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+  max-width: 650px;
+}
+
+.conveyor-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* Controls Matrix */
+.conveyor-controls-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.control-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.control-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.control-label strong {
+  color: var(--text-main);
+  font-size: 0.85rem;
+}
+
+.control-meta-sub {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.pill-group {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.pill-btn {
+  flex: 1;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-sunken);
+  color: var(--text-muted);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pill-btn:hover {
+  background: var(--bg-surface);
+  color: var(--text-main);
+}
+
+.pill-btn.active {
+  background: var(--accent-blue);
+  color: #ffffff;
+  border-color: var(--accent-blue);
+}
+
+/* ==========================================================================
+   Conveyor Visual Stage
+   ========================================================================== */
+
+.conveyor-visual-stage {
+  position: relative;
+  background: var(--bg-sunken);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 3rem 1.5rem 1.5rem 1.5rem;
+  overflow: hidden;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Overhead Optical Candling Chamber */
+.optical-booth {
+  position: absolute;
+  top: 0;
+  left: 45%;
+  transform: translateX(-50%);
+  width: 240px;
+  z-index: 10;
+}
+
+.candling-hood {
+  background: #1e293b;
+  border: 2px solid #334155;
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  padding: 0.5rem 0.75rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.candling-hood.strobe-active {
+  border-color: #fbbf24;
+  box-shadow:
+    0 0 35px rgba(251, 191, 36, 0.6),
+    inset 0 0 20px rgba(251, 191, 36, 0.4);
+}
+
+.camera-housing {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.camera-lens {
+  font-size: 1.3rem;
+  animation: pulseCamera 2s infinite ease-in-out;
+}
+
+@keyframes pulseCamera {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+.camera-label {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 0.05em;
+}
+
+.camera-fps {
+  font-size: 0.58rem;
+  color: #38bdf8;
+}
+
+.candling-scan-beam {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 220px;
+  background: linear-gradient(180deg, rgba(251, 191, 36, 0.4) 0%, rgba(251, 191, 36, 0.02) 100%);
+  border-left: 2px solid rgba(251, 191, 36, 0.6);
+  border-right: 2px solid rgba(251, 191, 36, 0.6);
+  pointer-events: none;
+  animation: candlingFlash 0.18s ease-out;
+}
+
+@keyframes candlingFlash {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Photocell Sensor Beam */
+.photocell-sensor {
+  position: absolute;
+  top: 70px;
+  left: 22%;
+  height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.sensor-eye {
+  width: 14px;
+  height: 14px;
+  background: #475569;
+  border-radius: 50%;
+  border: 2px solid #64748b;
+}
+
+.sensor-laser-line {
+  flex: 1;
+  width: 2px;
+  background: rgba(239, 68, 68, 0.4);
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.5);
+  transition: all 0.2s ease;
+}
+
+.photocell-sensor.tripped .sensor-laser-line {
+  background: rgba(16, 185, 129, 0.9);
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.9);
+  width: 3px;
+}
+
+.sensor-tag {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #94a3b8;
+  margin-top: 4px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.photocell-sensor.tripped .sensor-tag {
+  color: #10b981;
+}
+
+/* Conveyor Bed Surface */
+.conveyor-bed {
+  position: relative;
+  height: 220px;
+  background: #1e293b;
+  border: 2px solid #334155;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+.conveyor-rollers-bg {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 28px,
+    rgba(255, 255, 255, 0.04) 28px,
+    rgba(255, 255, 255, 0.04) 30px
+  );
+  animation: beltRoll 2s linear infinite;
+}
+
+@keyframes beltRoll {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 60px 0;
+  }
+}
+
+.conveyor-guide-rails {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-top: 6px solid #475569;
+  border-bottom: 6px solid #475569;
+  pointer-events: none;
+}
+
+/* Conveyor Moving Tray */
+.conveyor-tray-assembly {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 8;
+}
+
+.tray-molded-flat {
+  background: #334155;
+  border: 2px solid #64748b;
+  border-radius: 8px;
+  padding: 0.4rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.tray-label-badge {
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: #cbd5e1;
+  text-align: center;
+  letter-spacing: 0.06em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.tray-grid {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.tray-grid.grid-30 {
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+}
+
+.tray-grid.grid-12 {
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+}
+
+.tray-grid.grid-6 {
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+}
+
+.egg-pocket {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: #1e293b;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.egg-pocket:hover {
+  transform: scale(1.15);
+  z-index: 10;
+}
+
+.egg-pocket.grade-a {
+  border-color: #10b981;
+  background: rgba(16, 185, 129, 0.15);
+}
+
+.egg-pocket.grade-b {
+  border-color: #f59e0b;
+  background: rgba(245, 158, 11, 0.15);
+}
+
+.egg-pocket.grade-rej {
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.25);
+  animation: rejectPulse 1.2s infinite ease-in-out;
+}
+
+@keyframes rejectPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 rgba(239, 68, 68, 0);
+  }
+  50% {
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.8);
+  }
+}
+
+.egg-pocket.selected {
+  outline: 2px solid #38bdf8;
+  outline-offset: 1px;
+}
+
+.pocket-egg-shell {
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+.pocket-badge-id {
+  font-size: 0.45rem;
+  font-weight: 700;
+  color: #94a3b8;
+  line-height: 1;
+}
+
+/* Pneumatic Divert Chutes */
+.divert-actuator-station {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 320px;
+  background: rgba(15, 23, 42, 0.85);
+  border-left: 2px dashed #475569;
+  display: flex;
+  flex-direction: column;
+  padding: 0.4rem 0.6rem;
+  z-index: 6;
+}
+
+.station-label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.3rem;
+  text-align: right;
+}
+
+.chutes-group {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.35rem;
+  flex: 1;
+}
+
+.chute-item {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  padding: 0.35rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.chute-item.actuator-firing {
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.2);
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
+}
+
+.pneumatic-piston {
+  width: 6px;
+  height: 14px;
+  background: #64748b;
+  border-radius: 2px;
+  margin-bottom: 2px;
+  transition: transform 0.1s ease;
+}
+
+.actuator-firing .pneumatic-piston {
+  transform: translateY(6px);
+  background: #ef4444;
+  box-shadow: 0 0 8px #ef4444;
+}
+
+.chute-tag {
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: #94a3b8;
+  text-align: center;
+}
+
+.chute-desc {
+  font-size: 0.5rem;
+  color: #64748b;
+  text-align: center;
+}
+
+.chute-count {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #f8fafc;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.chute-main .chute-count {
+  color: #10b981;
+}
+
+/* ==========================================================================
+   Telemetry Strip & Fieldbus Terminal
+   ========================================================================== */
+
+.conveyor-telemetry-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.telemetry-block {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 0.85rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-sm);
+}
+
+.telemetry-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+.telemetry-value {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-main);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  margin: 0.15rem 0;
+}
+
+.telemetry-value small {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.telemetry-sub {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+/* Details Grid: Left Frame + Right Terminal */
+.conveyor-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+@media (max-width: 900px) {
+  .conveyor-details-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.conveyor-detail-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.conveyor-annotated-wrapper {
+  background: #0f172a;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.conveyor-annotated-img {
+  width: 100%;
+  height: auto;
+  max-height: 340px;
+  object-fit: contain;
+  display: block;
+}
+
+.conveyor-annotated-placeholder {
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  background: var(--bg-sunken);
+  border: 1px dashed var(--border-subtle);
+  border-radius: 8px;
+}
+
+.selected-pocket-card {
+  margin-top: 0.85rem;
+  background: var(--bg-sunken);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+}
+
+.pocket-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.pocket-card-header h4 {
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.pocket-card-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem 1rem;
+  font-size: 0.8rem;
+}
+
+.pocket-stat {
+  display: flex;
+  justify-content: space-between;
+  color: var(--text-muted);
+}
+
+.pocket-stat strong {
+  color: var(--text-main);
+}
+
+/* PLC Terminal */
+.plc-terminal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.plc-terminal-body {
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  padding: 0.75rem;
+  height: 380px;
+  overflow-y: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.terminal-idle-msg {
+  color: #64748b;
+  font-style: italic;
+  padding: 1rem;
+  text-align: center;
+}
+
+.terminal-line {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+  line-height: 1.4;
+}
+
+.terminal-time {
+  color: #64748b;
+  font-size: 0.7rem;
+  flex-shrink: 0;
+}
+
+.terminal-source {
+  font-weight: 700;
+  font-size: 0.68rem;
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.src-plc {
+  background: rgba(14, 165, 233, 0.2);
+  color: #38bdf8;
+}
+
+.src-cam {
+  background: rgba(168, 85, 247, 0.2);
+  color: #c084fc;
+}
+
+.src-ai {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+}
+
+.src-actuator {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+.terminal-text {
+  color: #cbd5e1;
+  word-break: break-word;
+}
+
+.terminal-reject .terminal-text {
+  color: #fca5a5;
+  font-weight: 600;
+}
+
+.terminal-pass .terminal-text {
+  color: #86efac;
+}
+
+.terminal-trigger .terminal-text {
+  color: #7dd3fc;
+}

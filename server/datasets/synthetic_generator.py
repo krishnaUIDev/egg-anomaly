@@ -179,9 +179,9 @@ def generate_tray_image(
     pad_h = int(height * 0.08)
     carton_x1, carton_y1 = pad_w, pad_h
     carton_x2, carton_y2 = width - pad_w, height - pad_h
-    carton_color = (210, 205, 195)
+    carton_color = (75, 80, 90)  # Industrial molded pulp / plastic flat color
     cv2.rectangle(img, (carton_x1, carton_y1), (carton_x2, carton_y2), carton_color, -1)
-    cv2.rectangle(img, (carton_x1, carton_y1), (carton_x2, carton_y2), (180, 175, 165), 3)
+    cv2.rectangle(img, (carton_x1, carton_y1), (carton_x2, carton_y2), (55, 60, 68), 3)
 
     if defect_distribution is None:
         defect_distribution = ["clean", "crack", "clean", "dirt_stain", "clean", "blood_spot"]
@@ -199,7 +199,7 @@ def generate_tray_image(
             cy = carton_y1 + r * cell_h + cell_h // 2
             
             # Recessed egg cup
-            cv2.ellipse(img, (cx, cy + 4), (egg_rx + 4, egg_ry + 4), 0, 0, 360, (190, 185, 175), -1)
+            cv2.ellipse(img, (cx, cy + 4), (egg_rx + 4, egg_ry + 4), 0, 0, 360, (55, 60, 70), -1)
 
             defect = defect_distribution[idx % len(defect_distribution)]
             shell_color = (235, 195, 160)

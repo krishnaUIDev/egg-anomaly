@@ -20,6 +20,8 @@ class EggROI:
     confidence: float                 # Confidence that an egg was detected (0.0 - 1.0)
     aspect_ratio: float               # Height / Width ratio of the egg contour
     solidity: float                   # Contour area / Convex hull area
+    row: int = 0                      # 0-indexed row position in tray matrix
+    col: int = 0                      # 0-indexed column position in tray matrix
 
 
 def fix_exif_orientation(pil_image: Image.Image) -> Image.Image:
@@ -283,9 +285,12 @@ def isolate_all_egg_rois(
             rows.append(current_row)
             
         sorted_candidates = []
-        for r in rows:
+        for r_idx, r in enumerate(rows):
             r.sort(key=lambda c: c["center"][0])
-            sorted_candidates.extend(r)
+            for c_idx, cand in enumerate(r):
+                cand["row"] = r_idx
+                cand["col"] = c_idx
+                sorted_candidates.append(cand)
         candidates = sorted_candidates[:max_eggs]
 
     # Convert candidates to EggROI objects
@@ -317,7 +322,9 @@ def isolate_all_egg_rois(
             bbox=(x, y, w, h),
             confidence=min(0.98, max(0.65, cand["solidity"] * 0.95)),
             aspect_ratio=cand["aspect_ratio"],
-            solidity=cand["solidity"]
+            solidity=cand["solidity"],
+            row=cand.get("row", 0),
+            col=cand.get("col", 0)
         ))
 
     return egg_rois

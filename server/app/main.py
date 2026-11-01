@@ -15,12 +15,14 @@ from app.schemas import (
     EnterpriseMetricsResponse,
     HealthResponse,
     InspectionResponse,
+    PlcActuatorSignal,
     SingleTrayEggSummary,
     TrayInspectionResponse,
 )
 from core.anomaly_engine import EggAnomalyEngine, encode_image_base64
 from core.grading import EggGrade, evaluate_egg_grade
 from core.preprocessing import fix_exif_orientation, isolate_all_egg_rois, isolate_egg_roi
+from datasets.synthetic_generator import generate_tray_image
 from fastapi import FastAPI, File, HTTPException, Query, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -180,26 +182,14 @@ async def inspect_egg(
     )
 
 
-@app.post("/api/v1/inspect/tray", response_model=TrayInspectionResponse, tags=["Inspection"])
-async def inspect_tray(
-    file: UploadFile = File(..., description="Full tray or carton image (e.g. 6, 12, 18, 30 eggs)"),
-    crack_sensitivity: float = Query(0.5, ge=0.1, le=1.0),
-    stain_sensitivity: float = Query(0.5, ge=0.1, le=1.0),
-):
-    """Inspects an entire carton or tray of multiple eggs simultaneously in a single capture."""
-    start_time = time.perf_counter()
-
-    contents = await file.read()
-    if not contents:
-        raise HTTPException(status_code=400, detail="Empty image payload received.")
-
-    try:
-        pil_img = Image.open(io.BytesIO(contents))
-        pil_img = fix_exif_orientation(pil_img)
-        rgb_img = np.array(pil_img.convert("RGB"))
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Failed to decode image: {e!s}")
-
+def process_tray_image_pipeline(
+    rgb_img: np.ndarray,
+    filename: str,
+    crack_sensitivity: float,
+    stain_sensitivity: float,
+    start_time: float,
+) -> TrayInspectionResponse:
+    """Core image processing pipeline for tray detection, quality grading, and PLC actuator signal synthesis."""
     # Discover all eggs in the tray/carton
     egg_rois = isolate_all_egg_rois(rgb_img, target_size=256)
     if not egg_rois:
@@ -214,21 +204,56 @@ async def inspect_tray(
     annotated_tray = rgb_img.copy()
     egg_summaries: list[SingleTrayEggSummary] = []
     grade_counts: dict[str, int] = defaultdict(int)
+    plc_signals: list[PlcActuatorSignal] = []
 
     for idx, roi in enumerate(egg_rois, start=1):
         defects, _, _ = engine.analyze(roi)
         grading = evaluate_egg_grade(defects)
         grade_counts[grading.grade.value] += 1
 
+        row = getattr(roi, "row", (idx - 1) // 6)
+        col = getattr(roi, "col", (idx - 1) % 6)
+        pocket_label = f"R{row}-C{col}"
+
         if grading.grade == EggGrade.GRADE_A:
             ring_color = (16, 185, 129)
             badge_text = f"#{idx} A"
+            actuator_action = "PASS"
+            chute_target = "Main Packing"
+            primary_defect = None
         elif grading.grade == EggGrade.GRADE_B:
             ring_color = (245, 158, 11)
             badge_text = f"#{idx} B"
+            actuator_action = "PASS"
+            chute_target = "Main Packing"
+            primary_defect = None
         else:
             ring_color = (239, 68, 68)
             badge_text = f"#{idx} REJ"
+            primary_defect = defects[0].defect_type.value if defects else "defect"
+            if primary_defect == "crack":
+                actuator_action = "DIVERT_CHUTE_1"
+                chute_target = "Chute 1: Liquid Egg Salvage (Crack)"
+            elif primary_defect == "dirt_stain":
+                actuator_action = "DIVERT_CHUTE_2"
+                chute_target = "Chute 2: Wash Station (Dirty)"
+            else:
+                actuator_action = "DIVERT_CHUTE_3"
+                chute_target = "Chute 3: Inedible Discard (Blood/Loss)"
+
+            plc_signals.append(PlcActuatorSignal(
+                pocket_label=pocket_label,
+                egg_id=idx,
+                row=row,
+                col=col,
+                grade=grading.grade.value,
+                primary_defect=primary_defect,
+                actuator_action=actuator_action,
+                solenoid_valve_id=col + 1,
+                target_chute=chute_target,
+                encoder_pulse_offset=1200 + (row * 120),
+                trigger_delay_ms=850 + (row * 60)
+            ))
 
         x, y, w, h = roi.bbox
         center = (x + w // 2, y + h // 2)
@@ -269,12 +294,17 @@ async def inspect_tray(
         egg_summaries.append(SingleTrayEggSummary(
             egg_id=idx,
             bbox=[x, y, w, h],
+            row=row,
+            col=col,
+            pocket_label=pocket_label,
             grade=grading.grade.value,
             quality_score=grading.quality_score,
             is_acceptable=grading.is_acceptable,
             defect_count=len(defects),
             defects=defect_items,
-            recommendation=grading.recommendation
+            recommendation=grading.recommendation,
+            actuator_action=actuator_action,
+            chute_target=chute_target
         ))
 
         INSPECTION_STATS["total_inspections"] += 1
@@ -297,7 +327,7 @@ async def inspect_tray(
     elapsed_ms = (time.perf_counter() - start_time) * 1000.0
 
     return TrayInspectionResponse(
-        filename=file.filename,
+        filename=filename,
         total_eggs_detected=total_eggs,
         grade_distribution=dict(grade_counts),
         tray_pass_rate_percentage=pass_rate,
@@ -306,7 +336,86 @@ async def inspect_tray(
         reject_count=reject,
         annotated_tray_image=annotated_uri,
         eggs=egg_summaries,
-        processing_time_ms=round(elapsed_ms, 1)
+        processing_time_ms=round(elapsed_ms, 1),
+        plc_signals=plc_signals
+    )
+
+
+@app.post("/api/v1/inspect/tray", response_model=TrayInspectionResponse, tags=["Inspection"])
+async def inspect_tray(
+    file: UploadFile = File(..., description="Full tray or carton image (e.g. 6, 12, 18, 30 eggs)"),
+    crack_sensitivity: float = Query(0.5, ge=0.1, le=1.0),
+    stain_sensitivity: float = Query(0.5, ge=0.1, le=1.0),
+):
+    """Inspects an entire carton or tray of multiple eggs simultaneously in a single capture."""
+    start_time = time.perf_counter()
+
+    contents = await file.read()
+    if not contents:
+        raise HTTPException(status_code=400, detail="Empty image payload received.")
+
+    try:
+        pil_img = Image.open(io.BytesIO(contents))
+        pil_img = fix_exif_orientation(pil_img)
+        rgb_img = np.array(pil_img.convert("RGB"))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to decode image: {e!s}")
+
+    return process_tray_image_pipeline(
+        rgb_img=rgb_img,
+        filename=file.filename or "uploaded_tray.jpg",
+        crack_sensitivity=crack_sensitivity,
+        stain_sensitivity=stain_sensitivity,
+        start_time=start_time
+    )
+
+
+@app.get("/api/v1/conveyor/simulate-frame", response_model=TrayInspectionResponse, tags=["Conveyor"])
+def simulate_conveyor_frame(
+    tray_size: str = Query("30", description="'30' (5x6), '12' (2x6), or '6' (2x3)"),
+    defect_rate: float = Query(0.15, ge=0.0, le=0.5, description="Target ratio of defective eggs"),
+    crack_sensitivity: float = Query(0.5, ge=0.1, le=1.0),
+    stain_sensitivity: float = Query(0.5, ge=0.1, le=1.0),
+):
+    """Generates a dynamic real-time industrial conveyor tray pass, executes high-speed edge AI grading,
+
+    and outputs live PLC fieldbus actuator instructions for pneumatic diverters.
+    """
+    start_time = time.perf_counter()
+
+    if tray_size == "12":
+        rows, cols = 2, 6
+        width, height = 900, 400
+    elif tray_size == "6":
+        rows, cols = 2, 3
+        width, height = 600, 450
+    else:  # default 30-egg flat
+        rows, cols = 5, 6
+        width, height = 960, 800
+
+    total_cells = rows * cols
+    defect_count = max(1 if defect_rate > 0 else 0, int(total_cells * defect_rate))
+
+    defect_pool = ["crack", "dirt_stain", "blood_spot"]
+    dist = ["clean"] * (total_cells - defect_count)
+    for _ in range(defect_count):
+        dist.append(np.random.choice(defect_pool))
+    np.random.shuffle(dist)
+
+    tray_img, _ = generate_tray_image(
+        rows=rows,
+        cols=cols,
+        defect_distribution=dist,
+        width=width,
+        height=height
+    )
+
+    return process_tray_image_pipeline(
+        rgb_img=tray_img,
+        filename=f"conveyor_tray_{tray_size}_{int(time.time() * 1000)}.jpg",
+        crack_sensitivity=crack_sensitivity,
+        stain_sensitivity=stain_sensitivity,
+        start_time=start_time
     )
 
 

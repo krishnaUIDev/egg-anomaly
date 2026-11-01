@@ -120,3 +120,26 @@ def test_tray_inspection_endpoint():
     assert data["annotated_tray_image"].startswith("data:image/jpeg;base64,")
     assert len(data["eggs"]) >= 1
     assert data["tray_pass_rate_percentage"] >= 0.0
+    assert "plc_signals" in data
+    assert "row" in data["eggs"][0]
+    assert "col" in data["eggs"][0]
+
+
+def test_conveyor_simulate_frame_endpoint():
+    """Validates real-time industrial conveyor simulation endpoint and PLC actuator output."""
+    response = client.get("/api/v1/conveyor/simulate-frame?tray_size=12&defect_rate=0.25")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["total_eggs_detected"] >= 6
+    assert "plc_signals" in data
+    assert "annotated_tray_image" in data
+    assert data["processing_time_ms"] > 0
+    # Verify PLC actuator payload structure
+    # Also test standard 30-egg flat simulation
+    res30 = client.get("/api/v1/conveyor/simulate-frame?tray_size=30&defect_rate=0.10")
+    assert res30.status_code == 200
+    data30 = res30.json()
+    assert data30["total_eggs_detected"] >= 24
+    assert len(data30["eggs"]) >= 24
+    assert "plc_signals" in data30
+

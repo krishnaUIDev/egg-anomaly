@@ -2140,3 +2140,226 @@ h1 {
 .terminal-trigger .terminal-text {
   color: #7dd3fc;
 }
+
+/* ==========================================================================
+   Conveyor Live Camera Scanner Styles
+   ========================================================================== */
+
+.conveyor-mode-toggle-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.conveyor-camera-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.conveyor-camera-controls-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.85rem 1.25rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+}
+
+.controls-left,
+.controls-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.scan-speed-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.scan-speed-selector select {
+  background: var(--bg-sunken);
+  color: var(--text-main);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.75rem;
+  outline: none;
+}
+
+/* Divert Alert Banner */
+.conveyor-divert-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1.5px solid #ef4444;
+  color: #fca5a5;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  animation: bannerPulse 1s infinite alternate ease-in-out;
+}
+
+@keyframes bannerPulse {
+  0% {
+    box-shadow: 0 0 0 rgba(239, 68, 68, 0);
+  }
+  100% {
+    box-shadow: 0 0 16px rgba(239, 68, 68, 0.4);
+  }
+}
+
+.banner-icon {
+  font-size: 1.1rem;
+}
+
+/* Camera Viewport Card */
+.conveyor-camera-viewport-card {
+  background: #0f172a;
+  border: 2px solid #334155;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+}
+
+.conveyor-camera-stage {
+  position: relative;
+  width: 100%;
+  min-height: 400px;
+  background: #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.conveyor-live-video {
+  width: 100%;
+  height: auto;
+  max-height: 520px;
+  object-fit: contain;
+  display: block;
+}
+
+.conveyor-overlay-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.conveyor-laser-scanline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #38bdf8;
+  box-shadow:
+    0 0 10px #38bdf8,
+    0 0 20px #0ea5e9;
+  z-index: 6;
+  pointer-events: none;
+  animation: conveyorLaserScan 2.4s ease-in-out infinite alternate;
+}
+
+@keyframes conveyorLaserScan {
+  0% {
+    top: 5%;
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    top: 95%;
+    opacity: 0.4;
+  }
+}
+
+.conveyor-camera-idle-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  color: #94a3b8;
+  text-align: center;
+  padding: 2rem;
+  background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+  z-index: 7;
+}
+
+.idle-cam-icon {
+  font-size: 3rem;
+  opacity: 0.7;
+}
+
+.conveyor-camera-idle-overlay h3 {
+  font-size: 1.2rem;
+  color: #f8fafc;
+  margin: 0;
+}
+
+.conveyor-camera-idle-overlay p {
+  font-size: 0.85rem;
+  max-width: 440px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+/* Viewport HUD Overlay Bar */
+.camera-viewport-hud {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  z-index: 8;
+  pointer-events: none;
+}
+
+.hud-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 0.25rem 0.65rem;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: #e2e8f0;
+}
+
+.hud-pill strong {
+  color: #38bdf8;
+}
+
+.virtual-actions-row {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}

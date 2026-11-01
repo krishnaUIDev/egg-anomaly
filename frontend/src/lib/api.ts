@@ -61,12 +61,16 @@ export async function inspectBatchEggs(
 }
 
 export async function inspectTray(
-  file: File,
+  file: File | Blob,
   crackSensitivity = 0.5,
   stainSensitivity = 0.5
 ): Promise<TrayInspectionResult> {
   const formData = new FormData();
-  formData.append("file", file);
+  if (file instanceof File) {
+    formData.append("file", file);
+  } else {
+    formData.append("file", file, "conveyor_frame.jpg");
+  }
 
   const query = new URLSearchParams({
     crack_sensitivity: crackSensitivity.toFixed(2),
@@ -103,6 +107,28 @@ export async function simulateConveyorFrame(
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}));
     throw new Error(errorData.detail || `Conveyor simulation failed with status ${res.status}`);
+  }
+
+  return res.json();
+}
+
+export async function fetchIndustrialCameraFrame(
+  streamUrl: string,
+  crackSensitivity = 0.5,
+  stainSensitivity = 0.5
+): Promise<TrayInspectionResult> {
+  const query = new URLSearchParams({
+    stream_url: streamUrl,
+    crack_sensitivity: crackSensitivity.toFixed(2),
+    stain_sensitivity: stainSensitivity.toFixed(2),
+  });
+
+  const res = await fetch(`/api/v1/conveyor/industrial-frame?${query.toString()}`);
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(
+      errorData.detail || `Industrial camera stream failed with status ${res.status}`
+    );
   }
 
   return res.json();

@@ -419,6 +419,47 @@ def simulate_conveyor_frame(
     )
 
 
+@app.get("/api/v1/conveyor/industrial-frame", response_model=TrayInspectionResponse, tags=["Conveyor"])
+def capture_industrial_camera_frame(
+    stream_url: str = Query(..., description="RTSP, HTTP, or USB device index for industrial machine vision camera"),
+    crack_sensitivity: float = Query(0.5, ge=0.1, le=1.0),
+    stain_sensitivity: float = Query(0.5, ge=0.1, le=1.0),
+):
+    """Pulls an optical frame from an industrial network camera, RTSP feed, or USB machine vision source,
+
+    executes high-speed defect grading, and synthesizes PLC actuator signals.
+    """
+    start_time = time.perf_counter()
+    try:
+        source: int | str = int(stream_url) if stream_url.isdigit() else stream_url
+        cap = cv2.VideoCapture(source)
+        if not cap.isOpened():
+            raise HTTPException(
+                status_code=400,
+                detail=f"Cannot connect to industrial camera source: {stream_url}"
+            )
+        ret, frame = cap.read()
+        cap.release()
+        if not ret or frame is None:
+            raise HTTPException(
+                status_code=500,
+                detail="Failed to acquire optical frame from industrial camera stream."
+            )
+        rgb_img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Camera stream acquisition failed: {e!s}")
+
+    return process_tray_image_pipeline(
+        rgb_img=rgb_img,
+        filename=f"industrial_cam_{int(time.time() * 1000)}.jpg",
+        crack_sensitivity=crack_sensitivity,
+        stain_sensitivity=stain_sensitivity,
+        start_time=start_time
+    )
+
+
 @app.post("/api/v1/inspect/batch", response_model=BatchInspectionSummary, tags=["Inspection"])
 async def inspect_batch(
     files: list[UploadFile] = File(..., description="Batch of egg images to inspect"),

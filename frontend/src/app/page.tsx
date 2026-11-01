@@ -3,6 +3,7 @@
 import React, { useState, useRef } from "react";
 import { inspectSingleEgg } from "../lib/api";
 import { InspectionResult, ViewLayer } from "../lib/types";
+import { ThemeToggle } from "../components/ThemeToggle";
 
 export default function EggScanApp() {
   const [activeTab, setActiveTab] = useState<ViewLayer>("annotated");
@@ -74,9 +75,12 @@ export default function EggScanApp() {
             <p className="subtitle">Real-time Anomaly Detection & Quality Grading</p>
           </div>
         </div>
-        <div className="status-indicator" id="statusPill">
-          <span className={`status-dot ${isLoading ? "pulse" : ""}`} />
-          <span id="statusText">{isLoading ? "Analyzing..." : "System Ready"}</span>
+        <div className="header-actions">
+          <ThemeToggle />
+          <div className="status-indicator" id="statusPill">
+            <span className={`status-dot ${isLoading ? "pulse" : ""}`} />
+            <span id="statusText">{isLoading ? "Analyzing..." : "System Ready"}</span>
+          </div>
         </div>
       </header>
 

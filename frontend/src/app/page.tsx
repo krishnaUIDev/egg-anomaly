@@ -72,15 +72,65 @@ export default function EggScanApp() {
 
   return (
     <div className="app-container">
-      {/* Header */}
+      {/* Unified Compact Header */}
       <header className="header">
-        <div className="logo-area">
-          <div className="logo-icon">🥚</div>
-          <div>
-            <h1>EggScan AI</h1>
-            <p className="subtitle">Real-time Anomaly Detection & Quality Grading</p>
+        <div className="header-left">
+          <div className="logo-area">
+            <span className="logo-icon">🥚</span>
+            <div className="logo-text">
+              <h1>EggScan AI</h1>
+              <span className="version-badge">v2.0</span>
+            </div>
           </div>
+
+          {/* Integrated Navigation Mode Switcher Tabs */}
+          <nav className="nav-tab-bar" role="tablist" aria-label="Quality Control Operations">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={navMode === "single"}
+              className={`nav-tab-item ${navMode === "single" ? "active" : ""}`}
+              onClick={() => setNavMode("single")}
+            >
+              <span className="nav-tab-icon">📸</span>
+              <span className="nav-tab-text">Single Egg</span>
+            </button>
+
+            <button
+              type="button"
+              role="tab"
+              aria-selected={navMode === "tray"}
+              className={`nav-tab-item ${navMode === "tray" ? "active" : ""}`}
+              onClick={() => setNavMode("tray")}
+            >
+              <span className="nav-tab-icon">🗂️</span>
+              <span className="nav-tab-text">Carton & Tray</span>
+            </button>
+
+            <button
+              type="button"
+              role="tab"
+              aria-selected={navMode === "viewfinder"}
+              className={`nav-tab-item ${navMode === "viewfinder" ? "active" : ""}`}
+              onClick={() => setNavMode("viewfinder")}
+            >
+              <span className="nav-tab-icon">📹</span>
+              <span className="nav-tab-text">Live Viewfinder</span>
+            </button>
+
+            <button
+              type="button"
+              role="tab"
+              aria-selected={navMode === "analytics"}
+              className={`nav-tab-item ${navMode === "analytics" ? "active" : ""}`}
+              onClick={() => setNavMode("analytics")}
+            >
+              <span className="nav-tab-icon">📊</span>
+              <span className="nav-tab-text">Plant Analytics</span>
+            </button>
+          </nav>
         </div>
+
         <div className="header-actions">
           <ThemeToggle />
           <div className="status-indicator" id="statusPill">
@@ -89,53 +139,6 @@ export default function EggScanApp() {
           </div>
         </div>
       </header>
-
-      {/* Navigation Mode Switcher Tabs */}
-      <nav className="nav-tab-bar" role="tablist" aria-label="Quality Control Operations">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={navMode === "single"}
-          className={`nav-tab-item ${navMode === "single" ? "active" : ""}`}
-          onClick={() => setNavMode("single")}
-        >
-          <span className="nav-tab-icon">📸</span>
-          <span className="nav-tab-text">Single Egg</span>
-        </button>
-
-        <button
-          type="button"
-          role="tab"
-          aria-selected={navMode === "tray"}
-          className={`nav-tab-item ${navMode === "tray" ? "active" : ""}`}
-          onClick={() => setNavMode("tray")}
-        >
-          <span className="nav-tab-icon">🗂️</span>
-          <span className="nav-tab-text">Carton & Tray</span>
-        </button>
-
-        <button
-          type="button"
-          role="tab"
-          aria-selected={navMode === "viewfinder"}
-          className={`nav-tab-item ${navMode === "viewfinder" ? "active" : ""}`}
-          onClick={() => setNavMode("viewfinder")}
-        >
-          <span className="nav-tab-icon">📹</span>
-          <span className="nav-tab-text">Live Viewfinder</span>
-        </button>
-
-        <button
-          type="button"
-          role="tab"
-          aria-selected={navMode === "analytics"}
-          className={`nav-tab-item ${navMode === "analytics" ? "active" : ""}`}
-          onClick={() => setNavMode("analytics")}
-        >
-          <span className="nav-tab-icon">📊</span>
-          <span className="nav-tab-text">Plant Analytics</span>
-        </button>
-      </nav>
 
       {/* View 1: Single Egg Inspector */}
       {navMode === "single" && (

@@ -172,7 +172,7 @@ export function LiveViewfinder() {
       {/* Top Controls Bar */}
       <section className="card">
         <div className="section-header-row">
-          <div>
+          <div className="section-title-group">
             <h2>📹 Real-time Viewfinder HUD</h2>
             <p className="section-desc">
               Hands-free continuous quality scanning for conveyor belts and packing lines.

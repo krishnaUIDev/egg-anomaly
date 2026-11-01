@@ -45,7 +45,7 @@ export function TrayScanner() {
       {/* Top Banner / Actions Card */}
       <section className="card">
         <div className="section-header-row">
-          <div>
+          <div className="section-title-group">
             <h2>🗂️ Carton & Tray Batch Inspector</h2>
             <p className="section-desc">
               Scan whole 6/12-egg consumer cartons or 30-egg commercial packing flats in a single

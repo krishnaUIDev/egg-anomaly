@@ -81,7 +81,7 @@ export function AnalyticsView() {
       {/* Top Header Card */}
       <section className="card">
         <div className="section-header-row">
-          <div>
+          <div className="section-title-group">
             <h2>📊 Enterprise Plant QC & Real-Time Analytics</h2>
             <p className="section-desc">
               Continuous yield monitoring, USDA commercial grading compliance, and defect telemetry.
@@ -141,8 +141,10 @@ export function AnalyticsView() {
         <div className="analytics-breakdown-grid">
           {/* Grade Distribution Card */}
           <section className="card">
-            <h3>USDA Commercial Grade Distribution</h3>
-            <p className="section-desc">Breakdown of marketable vs reject classifications.</p>
+            <div className="section-title-group">
+              <h3>USDA Commercial Grade Distribution</h3>
+              <p className="section-desc">Breakdown of marketable vs reject classifications.</p>
+            </div>
 
             <div className="progress-bars-list">
               {Object.entries(metrics.grade_distribution).map(([grade, count]) => {
@@ -172,8 +174,10 @@ export function AnalyticsView() {
 
           {/* Defect Frequency Card */}
           <section className="card">
-            <h3>Defect Classification Frequency</h3>
-            <p className="section-desc">Identified defect taxonomy across inspected lots.</p>
+            <div className="section-title-group">
+              <h3>Defect Classification Frequency</h3>
+              <p className="section-desc">Identified defect taxonomy across inspected lots.</p>
+            </div>
 
             <div className="progress-bars-list">
               {Object.entries(metrics.defect_frequencies).map(([defect, count]) => {

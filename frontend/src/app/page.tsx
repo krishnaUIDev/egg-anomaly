@@ -142,10 +142,12 @@ export default function EggScanApp() {
         <main className="main-layout">
           {/* Left: Capture & Controls Card */}
           <section className="card capture-card">
-            <h2>Capture Egg</h2>
-            <p className="section-desc">
-              Snap a photo with your phone camera or upload an image to begin real-time analysis.
-            </p>
+            <div className="section-title-group">
+              <h2>Capture Egg</h2>
+              <p className="section-desc">
+                Snap a photo with your phone camera or upload an image to begin real-time analysis.
+              </p>
+            </div>
 
             {/* Capture Buttons */}
             <div className="action-buttons">

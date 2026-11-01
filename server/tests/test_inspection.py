@@ -1,5 +1,7 @@
 """Unit and integration tests for the Egg Anomaly Inspection Engine."""
 
+import random
+
 import numpy as np
 from core.anomaly_engine import EggAnomalyEngine, encode_image_base64
 from core.grading import DefectType, EggGrade, evaluate_egg_grade
@@ -17,6 +19,8 @@ def test_lighting_normalization():
 
 def test_isolate_egg_roi():
     """Verifies that an egg on a background is correctly detected, segmented, and cropped."""
+    random.seed(42)
+    np.random.seed(42)
     img_rgb, _ = generate_egg_image(defect_type="clean", width=400, height=400)
     roi = isolate_egg_roi(img_rgb, target_size=256)
     
@@ -29,6 +33,8 @@ def test_isolate_egg_roi():
 
 def test_clean_egg_inspection():
     """Verifies that a pristine egg receives Grade A with no critical defects."""
+    random.seed(42)
+    np.random.seed(42)
     img_rgb, _ = generate_egg_image(defect_type="clean", width=500, height=500)
     roi = isolate_egg_roi(img_rgb, target_size=256)
     
@@ -44,6 +50,8 @@ def test_clean_egg_inspection():
 
 def test_crack_detection():
     """Verifies that an egg with a crack is detected and classified as Reject."""
+    random.seed(42)
+    np.random.seed(42)
     img_rgb, _ = generate_egg_image(defect_type="crack", width=500, height=500)
     roi = isolate_egg_roi(img_rgb, target_size=256)
     
@@ -60,6 +68,8 @@ def test_crack_detection():
 
 def test_dirt_stain_detection():
     """Verifies that an egg with surface stains is flagged."""
+    random.seed(42)
+    np.random.seed(42)
     img_rgb, _ = generate_egg_image(defect_type="dirt_stain", width=500, height=500)
     roi = isolate_egg_roi(img_rgb, target_size=256)
     

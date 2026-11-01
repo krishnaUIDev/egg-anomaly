@@ -94,8 +94,10 @@ class EggAnomalyEngine:
                 aspect = max(bw, bh) / max(min(bw, bh), 1)
                 
                 # Check linearity/narrowness (thickness = area / length)
+                # Diagonal cracks can have bounding box aspect ratio ~1.1 to 1.25 despite high line length
                 thickness = cnt_area / max(length, 1.0)
-                if aspect > 1.3 and thickness < 8.5:
+                is_crack_shape = (aspect > 1.15 or length > min_crack_len * 1.2) and thickness < 8.5
+                if is_crack_shape:
                     confidence = min(0.98, 0.70 + (length / (w * 0.25)) * 0.25)
                     severity = "critical" if length > (w * 0.12) else "medium"
                     

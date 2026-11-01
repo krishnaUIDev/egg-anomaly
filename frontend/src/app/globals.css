@@ -1118,6 +1118,97 @@ h1 {
   background: rgba(56, 189, 248, 0.6);
 }
 
+.hud-reticle.locked .hud-egg-silhouette {
+  border: 3px solid #10b981;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+  animation: none;
+}
+
+.hud-reticle.locked .hud-corner {
+  border-color: #10b981;
+}
+
+.hud-reticle.locked .hud-crosshair-h,
+.hud-reticle.locked .hud-crosshair-v {
+  background: #10b981;
+}
+
+.hud-instruction.locked {
+  background: rgba(16, 185, 129, 0.9);
+  color: #ffffff;
+}
+
+/* Filmstrip for continuous scanning session */
+.viewfinder-filmstrip {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.85rem;
+  background: var(--bg-sunken);
+  border-top: 1px solid var(--border-subtle);
+  overflow-x: auto;
+}
+
+.filmstrip-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.filmstrip-scroll {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.filmstrip-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.filmstrip-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.55rem;
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.filmstrip-item.grade-a {
+  border-color: var(--color-grade-a);
+  color: var(--color-grade-a);
+}
+
+.filmstrip-item.grade-b {
+  border-color: var(--color-grade-b);
+  color: var(--color-grade-b);
+}
+
+.filmstrip-item.reject {
+  border-color: var(--color-reject);
+  color: var(--color-reject);
+}
+
+.filmstrip-id {
+  color: var(--text-muted);
+  font-size: 0.68rem;
+}
+
+.filmstrip-grade {
+  font-weight: 800;
+}
+
+.filmstrip-score {
+  font-size: 0.68rem;
+}
+
 .hud-instruction {
   position: absolute;
   bottom: 1.5rem;

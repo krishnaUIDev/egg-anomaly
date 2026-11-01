@@ -39,6 +39,30 @@ export interface BatchSummary {
   items: InspectionResult[];
 }
 
+export interface TrayEggItem {
+  egg_id: number;
+  bbox: [number, number, number, number];
+  grade: "Grade A" | "Grade B" | "Reject" | string;
+  quality_score: number;
+  is_acceptable: boolean;
+  defect_count: number;
+  defects: DefectItem[];
+  recommendation: string;
+}
+
+export interface TrayInspectionResult {
+  filename?: string;
+  total_eggs_detected: number;
+  grade_distribution: Record<string, number>;
+  tray_pass_rate_percentage: number;
+  grade_a_count: number;
+  grade_b_count: number;
+  reject_count: number;
+  annotated_tray_image: string;
+  eggs: TrayEggItem[];
+  processing_time_ms: number;
+}
+
 export interface EnterpriseMetrics {
   total_inspections: number;
   pass_rate_percentage: number;

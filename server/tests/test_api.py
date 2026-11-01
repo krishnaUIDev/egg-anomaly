@@ -99,3 +99,24 @@ def test_enterprise_metrics_endpoint():
     assert "Grade A" in metrics["grade_distribution"]
     assert "Reject" in metrics["grade_distribution"]
     assert metrics["uptime_seconds"] > 0
+
+
+def test_tray_inspection_endpoint():
+    import cv2
+    from datasets.synthetic_generator import generate_tray_image
+
+    tray_img, _ = generate_tray_image(rows=2, cols=2)
+    success, encoded_jpg = cv2.imencode(".jpg", cv2.cvtColor(tray_img, cv2.COLOR_RGB2BGR))
+    assert success
+
+    response = client.post(
+        "/api/v1/inspect/tray",
+        files={"file": ("tray_sample.jpg", encoded_jpg.tobytes(), "image/jpeg")}
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["total_eggs_detected"] >= 1
+    assert "annotated_tray_image" in data
+    assert data["annotated_tray_image"].startswith("data:image/jpeg;base64,")
+    assert len(data["eggs"]) >= 1
+    assert data["tray_pass_rate_percentage"] >= 0.0

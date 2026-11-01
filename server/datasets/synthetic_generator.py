@@ -164,3 +164,69 @@ def generate_egg_image(
 
     return img, defect_metadata
 
+
+def generate_tray_image(
+    rows: int = 2,
+    cols: int = 3,
+    defect_distribution: list[str] | None = None,
+    width: int = 800,
+    height: int = 600
+) -> tuple[np.ndarray, list[dict]]:
+    """Generates a synthetic egg carton or tray with multiple eggs for testing and demos."""
+    img = generate_table_background(width, height)
+    
+    pad_w = int(width * 0.08)
+    pad_h = int(height * 0.08)
+    carton_x1, carton_y1 = pad_w, pad_h
+    carton_x2, carton_y2 = width - pad_w, height - pad_h
+    carton_color = (210, 205, 195)
+    cv2.rectangle(img, (carton_x1, carton_y1), (carton_x2, carton_y2), carton_color, -1)
+    cv2.rectangle(img, (carton_x1, carton_y1), (carton_x2, carton_y2), (180, 175, 165), 3)
+
+    if defect_distribution is None:
+        defect_distribution = ["clean", "crack", "clean", "dirt_stain", "clean", "blood_spot"]
+
+    cell_w = (carton_x2 - carton_x1) // cols
+    cell_h = (carton_y2 - carton_y1) // rows
+    egg_rx = int(cell_w * 0.32)
+    egg_ry = int(cell_h * 0.38)
+
+    egg_metas = []
+    idx = 0
+    for r in range(rows):
+        for c in range(cols):
+            cx = carton_x1 + c * cell_w + cell_w // 2
+            cy = carton_y1 + r * cell_h + cell_h // 2
+            
+            # Recessed egg cup
+            cv2.ellipse(img, (cx, cy + 4), (egg_rx + 4, egg_ry + 4), 0, 0, 360, (190, 185, 175), -1)
+
+            defect = defect_distribution[idx % len(defect_distribution)]
+            shell_color = (235, 195, 160)
+            egg_mask = np.zeros((height, width), dtype=np.uint8)
+            cv2.ellipse(egg_mask, (cx, cy), (egg_rx, egg_ry), 0, 0, 360, 255, -1)
+            
+            egg_layer = np.zeros_like(img)
+            egg_layer[:] = shell_color
+
+            if defect == "crack":
+                pts = [(cx - 15, cy - 10), (cx - 5, cy + 5), (cx + 10, cy + 18)]
+                cv2.polylines(egg_layer, [np.array(pts)], False, (35, 25, 20), 2)
+            elif defect == "dirt_stain":
+                cv2.circle(egg_layer, (cx + 5, cy + 5), 10, (70, 50, 30), -1)
+            elif defect == "blood_spot":
+                cv2.circle(egg_layer, (cx - 4, cy - 2), 6, (180, 20, 20), -1)
+
+            mask_float = cv2.GaussianBlur(egg_mask, (5, 5), 0).astype(np.float32) / 255.0
+            for ch in range(3):
+                img[:, :, ch] = (egg_layer[:, :, ch] * mask_float + img[:, :, ch] * (1.0 - mask_float)).astype(np.uint8)
+
+            egg_metas.append({
+                "egg_id": idx + 1,
+                "center": (cx, cy),
+                "defect": defect
+            })
+            idx += 1
+
+    return img, egg_metas
+

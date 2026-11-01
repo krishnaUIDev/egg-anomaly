@@ -1,4 +1,4 @@
-import { InspectionResult, BatchSummary, EnterpriseMetrics } from "./types";
+import { InspectionResult, BatchSummary, EnterpriseMetrics, TrayInspectionResult } from "./types";
 
 /**
  * Enterprise API client for EggScan backend microservice.
@@ -55,6 +55,32 @@ export async function inspectBatchEggs(
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}));
     throw new Error(errorData.detail || `Batch inspection failed with status ${res.status}`);
+  }
+
+  return res.json();
+}
+
+export async function inspectTray(
+  file: File,
+  crackSensitivity = 0.5,
+  stainSensitivity = 0.5
+): Promise<TrayInspectionResult> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const query = new URLSearchParams({
+    crack_sensitivity: crackSensitivity.toFixed(2),
+    stain_sensitivity: stainSensitivity.toFixed(2),
+  });
+
+  const res = await fetch(`/api/v1/inspect/tray?${query.toString()}`, {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.detail || `Tray inspection failed with status ${res.status}`);
   }
 
   return res.json();

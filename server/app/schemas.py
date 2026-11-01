@@ -41,6 +41,30 @@ class BatchInspectionSummary(BaseModel):
     items: list[InspectionResponse]
 
 
+class SingleTrayEggSummary(BaseModel):
+    egg_id: int = Field(..., description="1-indexed sequence identifier on tray")
+    bbox: list[int] = Field(..., description="[x, y, w, h] coordinates on full tray")
+    grade: str = Field(..., description="'Grade A', 'Grade B', or 'Reject'")
+    quality_score: float = Field(..., description="Quality score 0 - 100")
+    is_acceptable: bool = Field(..., description="True if fit for commercial sale")
+    defect_count: int = Field(..., description="Number of defects found")
+    defects: list[DefectResponseItem] = Field(default_factory=list)
+    recommendation: str = Field(..., description="Action recommendation")
+
+
+class TrayInspectionResponse(BaseModel):
+    filename: str | None = Field(None, description="Original filename")
+    total_eggs_detected: int = Field(..., description="Count of segmented eggs")
+    grade_distribution: dict[str, int] = Field(..., description="Counts per grade")
+    tray_pass_rate_percentage: float = Field(..., description="Percentage of marketable eggs")
+    grade_a_count: int = Field(0)
+    grade_b_count: int = Field(0)
+    reject_count: int = Field(0)
+    annotated_tray_image: str = Field(..., description="Base64 encoded JPEG overlay of entire tray with numbered rings")
+    eggs: list[SingleTrayEggSummary] = Field(default_factory=list, description="Detailed analysis per egg")
+    processing_time_ms: float = Field(..., description="Inference latency in milliseconds")
+
+
 class EnterpriseMetricsResponse(BaseModel):
     total_inspections: int
     pass_rate_percentage: float
